@@ -65,6 +65,8 @@ In a first iteration, only closed commands should be given; this also makes it e
 
 ## Less important literature
 - [Many nlp datasets](https://github.com/niderhoff/nlp-datasets)
+- [Make a Pip package](https://dzone.com/articles/executable-package-pip-install)
+- [On state machines](https://www.smashingmagazine.com/2018/01/rise-state-machines/)
 
 ## Stuff to look at
 - RasaNLU and RasaCore (on top of spacy)
@@ -84,3 +86,24 @@ In a first iteration, only closed commands should be given; this also makes it e
 - [6](https://stackabuse.com/python-for-nlp-creating-a-rule-based-chatbot/)
 
 ## Goal
+
+# Notes on references
+- hello
+  my dear
+- ehat 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
