@@ -78,13 +78,6 @@ while(flag==True):
         print("ROBO: Bye! take care..")
 
 
-yhat = a + b * x_train
-error = (yhat - y_train)
-loss = (error ** 2).mean()
-a_grad = -2 * error.mean()
-b_grad = -2 * (x_train * error).mean()
-a = a - lr * a_grad
-b = b - lr * b_grad
 
 
 

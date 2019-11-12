@@ -1,6 +1,7 @@
 # Intent classification for matplotlib
 The goal is to create an intent classifier for matplotlib. It should enhance matplotlib by a function that allows to give an intent in natural lanuguage and get back the code to do the appropriate action. Examples would be "Add a legend", or "Change the color of the points to red". See more examples below.
 
+# Goal
 In a first iteration, only closed commands should be given; this also makes it easy to call it from notebooks. The (probably unreachable) goal would be that the bot is discussion enabled like below: 
 - Human: Add a legend
 - Bot: where would you like the legend to be? Options are top, bottom, right, left.
@@ -10,15 +11,20 @@ In a first iteration, only closed commands should be given; this also makes it e
 - Bot generates code.
 
 # Questions to clarify
-- Which plotting library to use? Matplotlib, plotly, plotly express?
-- What would be good decision criteria?
-- Just write use cases myself? Use stack overflow as inspiration?
-- Basic network structure. I have NO clue.
+- Which plotting library to use? Matplotlib, plotly, plotly express? What would be good decision criteria? --> Don't know
+- Just write use cases myself? Use stack overflow as inspiration? --> I guess so. 
+- Basic neural network structure. I have NO clue.
 - Slot Filling and Intent Detection may be modeled differently.
 - M0, research, is already quite challenging. Where to start?
 - M0: use a chatbot framework? do it all by hand? (I guess latter).
-- Adam: Where can I learn what? how much would be hardcoded?
-- Use ATIS (Airline Travel Information Systems) data set
+- Adam: Where can I learn (ML) what? How much would be hardcoded?
+- Use ATIS (Airline Travel Information Systems) data set?
+
+# Questions 2: more technical
+- Can I create multiple intents from a single sentence like: "Plot x vs y, with red and blue markers, respectively"? I should get two chained intents:
+    - first: plot x vs y,
+    - second: make x red,
+    - third: make y blue.
 
 # Design points
 - Subplots are out of scope
@@ -66,3 +72,15 @@ In a first iteration, only closed commands should be given; this also makes it e
 - [Chatterbot framework](https://spacy.io/universe/project/Chatterbot)
 - [Rules of ml](https://developers.google.com/machine-learning/guides/rules-of-ml)
 - [markdown wiki](http://dynalon.github.io/mdwiki/#!index.md)
+
+# First call with Tristan
+
+## Given references
+- [1](https://ai-guru.de/chatbots-auf-hindi/)
+- [2](https://github.com/AI-Guru/stateful-conversational-agent)
+- [3](https://github.com/zalandoresearch/flair)
+- [4](https://github.com/zalandoresearch/flair/blob/master/resources/docs/TUTORIAL_5_DOCUMENT_EMBEDDINGS.md)
+- [5](https://ai-guru.de/deep-learning-and-psychology-character-typing-reddit-bert-and-fast-ai/)
+- [6](https://stackabuse.com/python-for-nlp-creating-a-rule-based-chatbot/)
+
+## Goal
