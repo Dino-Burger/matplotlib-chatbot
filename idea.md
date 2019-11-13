@@ -71,9 +71,17 @@ In a first iteration, only closed commands should be given; this also makes it e
 ## Stuff to look at
 - RasaNLU and RasaCore (on top of spacy)
 - [Build a Rasa NLU Chatbot with spaCy and FastText](https://medium.com/strai/build-a-rasa-nlu-chatbot-with-spacy-with-fasttext-240e192082bd)
+- [Rasa Slides](https://s3.amazonaws.com/assets.datacamp.com/production/course_3631/slides/chapter2.pdf)
 - [Chatterbot framework](https://spacy.io/universe/project/Chatterbot)
 - [Rules of ml](https://developers.google.com/machine-learning/guides/rules-of-ml)
 - [markdown wiki](http://dynalon.github.io/mdwiki/#!index.md)
+- [Chatito helps you generate datasets for training and validating chatbot models using a simple DSL](https://github.com/rodrigopivi/Chatito)
+- [Chatito](https://rodrigopivi.github.io/Chatito/)
+- [Torch intent parsing](https://github.com/spro/torch-seq2seq-intent-parsing)
+- [The same in pytorch?](https://github.com/spro/pytorch-seq2seq-intent-parsing)
+- [My first Chatbot with rasa](https://medium.com/@lotass/my-first-chatbot-14c5e2f64783)
+
+
 
 # First call with Tristan
 
@@ -91,6 +99,13 @@ In a first iteration, only closed commands should be given; this also makes it e
 - hello
   my dear
 - ehat 
+
+## Rachel
+- can you make the numbers in thousend
+- create multiple plots at once
+- output the slides as png or powerpoint
+- show people different options they could plot
+
 
 
 
