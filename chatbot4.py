@@ -1,4 +1,4 @@
-data = [
+input_data = [
     {
         "intent": "entry",
         "patterns": [],
@@ -46,39 +46,47 @@ data = [
         },
     {
         "intent": "add_legend",
-        "patterns": [],
+        "patterns": ["add legend", "add description"],
         "responses": ["Would you like to place the legend to the left or the right?"],
         "code_command": lambda x: ([],True),
-        "context_set": [],
+        "context_set": ["add_legend"],
         "context_require" : ["has_plotted"],
         "context_remove": [],
         },
     {
         "intent": "add_legend_top_right",
-        "patterns": [],
+        "patterns": ["add legend top right", "add description top right"],
         "responses": [],
         "code_command": lambda x: (["plt.legend(['test'], loc='upper right')"],True),
         "context_set": [],
-        "context_require" : ["has_plotted"],
-        "context_remove": [],
+        "context_require" : ["has_plotted", "add_legend"],
+        "context_remove": ["add_legend"],
         },
     {
         "intent": "add_legend_top_left",
-        "patterns": [],
+        "patterns": ["add legend top left", "add description top left"],
         "responses": [],
         "code_command": lambda x: (["plt.legend(['test'], loc='upper left')"],True),
         "context_set": [],
-        "context_require" : ["has_plotted"],
-        "context_remove": [],
+        "context_require" : ["has_plotted", "add_legend"],
+        "context_remove": ["add_legend"],
         },
 ]
 
+pattern_to_intent = [ (pattern, x["intent"]) for x in input_data for pattern in x["patterns"] ]
 
 
 
+def get_possible_next_states(current_state: str, current_context: dict):
+    # *all* of context_require must be in current_context
+    result = [ x['intent'] for x in input_data 
+                            if set(x['context_require']).issubset(current_context)]
+    return result
 
 
+get_possible_next_states("entry", {})
 
+get_possible_next_states("entry", {"has_plotted"})
 
 
 
