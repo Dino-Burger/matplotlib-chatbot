@@ -94,6 +94,23 @@ word_vectorizer = TfidfVectorizer()
 all_patterns = [pat for edge in input_data_edges for pat in edge["patterns"]]
 word_vectorizer.fit(all_patterns)
 
+# add tfidf vectors to input_data_edges
+for edge in input_data_edges:
+    patterns = edge["patterns"]
+    pattern_vectors = word_vectorizer.transform(patterns)
+    edge["pattern_vectors"] = pattern_vectors
+
+def get_possible_next_pattern_vectors(curr_state):
+    next_states = [ (member["pattern_vectors"][i_vec], 
+                    member["patterns"][i_vec],
+                    member["end_state"]) 
+                    for member in input_data_edges 
+                    for i_vec in range(member["pattern_vectors"].shape[0])
+                    if curr_state in member["start_states"]]
+    return next_states
+
+
+
 
 # versuch für etwas interaktives
 
@@ -102,7 +119,8 @@ continue_flag = True
 
 while(continue_flag):
     print("current State", curr_state)
-    possible_next_states = get_possible_next_states(curr_state)
+    possible_next_pattern_vectors = get_possible_next_pattern_vectors(curr_state)
+    possible_next_states = [ns for pat_vec, pat, ns in possible_next_pattern_vectors]
     print(possible_next_states)
 
     inp = input()
