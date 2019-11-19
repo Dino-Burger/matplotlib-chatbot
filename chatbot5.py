@@ -10,7 +10,8 @@ input_data_raw = [
         "patterns": ["make a line plot", "draw a line plot", "create a line plot", "Plot x"] },
 
     {   "intent": "plot",
-        "response": "", },
+        "response": "", 
+        "context_set": ["has_plotted"],},
    
     # hist
     {   "start_states": ["*"],
@@ -18,7 +19,8 @@ input_data_raw = [
         "patterns": ["make a histogram of x"] },
 
     {   "intent": "hist",
-        "response": "", },    
+        "response": "", 
+        "context_set": ["has_plotted"],},    
 
     # hist_with_bins
     {   "start_states": ["*"],
@@ -26,7 +28,8 @@ input_data_raw = [
         "patterns": ["make a histogram of x with y bins"] },
 
     {   "intent": "hist_with_bins",
-        "response": "", }, 
+        "response": "", 
+        "context_set": ["has_plotted"],}, 
 
     # add_legend
     {   "start_states": ["*"],
@@ -34,7 +37,8 @@ input_data_raw = [
         "patterns": ["add legend", "add description"] },
 
     {   "intent": "add_legend",
-        "response": "Would you like to place the legend to the left or the right?", },    
+        "response": "Would you like to place the legend to the left or the right?", 
+        "context_require" : ["has_plotted"],},    
 
     # add_legend_top_left
     {   "start_states": ["add_legend"],
@@ -45,7 +49,8 @@ input_data_raw = [
         "patterns": ["add legend top left", "add description top left"] },
 
     {   "intent": "add_legend_top_left",
-        "response": "", },    
+        "response": "", 
+        "context_require" : ["has_plotted"],},    
 
     # add_legend_top_right
     {   "start_states": ["add_legend"],
@@ -56,7 +61,8 @@ input_data_raw = [
         "patterns": ["add legend top right", "add description top right"] },
 
     {   "intent": "add_legend_top_right",
-        "response": "", },    
+        "response": "", 
+        "context_require" : ["has_plotted"],},    
 
 ]
 
@@ -73,19 +79,6 @@ input_data_edges = [ member for member in input_data if "start_states" in member
 input_data_nodes = [ member for member in input_data if "intent" in member]
 
 
-def get_possible_next_states(curr_state):
-    edges = [ member for member in input_data if "start_states" in member]
-    next_states = [ member["end_state"] for member in edges 
-                    if curr_state in member["start_states"]]
-    return next_states
-
-
-def get_possible_next_patterns(curr_state):
-    edges = [ member for member in input_data if "start_states" in member]
-    next_states = [ (patt, member["end_state"]) for member in edges for patt in member["patterns"]
-                    if curr_state in member["start_states"]]
-    return next_states
-
 # cosine tfidf model
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -101,6 +94,7 @@ for edge in input_data_edges:
     edge["pattern_vectors"] = pattern_vectors
 
 def get_possible_next_pattern_vectors(curr_state):
+    # returns [(pat_vec, pat, end_state)]
     next_states = [ (member["pattern_vectors"][i_vec], 
                     member["patterns"][i_vec],
                     member["end_state"]) 
@@ -109,24 +103,81 @@ def get_possible_next_pattern_vectors(curr_state):
                     if curr_state in member["start_states"]]
     return next_states
 
+def get_closest_command(possible_next_pattern_vectors: list, inp:str):
+    input_vector = word_vectorizer.transform([inp])
+    all_distances = [(cosine_similarity(input_vector, pat_vec)[0][0], pat, end_state)
+                        for pat_vec, pat, end_state in possible_next_pattern_vectors ]
+    max_command = max(all_distances, key = lambda l: l[0])
+    return max_command
 
+def get_response_from_intent(intent):
+    response = [ node.get("response", "") for node in input_data_nodes
+                    if node['intent'] == intent]
+    assert(len(response)==1)
+    return response[0]
+
+def get_context_require_from_intent(intent):
+    response = [ node.get("context_require", []) for node in input_data_nodes
+                    if node['intent'] == intent]
+    assert(len(response)==1)
+    return response[0]
+
+def get_context_set_from_intent(intent):
+    response = [ node.get("context_set", []) for node in input_data_nodes
+                    if node['intent'] == intent]
+    assert(len(response)==1)
+    return response[0]
 
 
 # versuch für etwas interaktives
 
 curr_state = "entry"
+curr_contexts = []
 continue_flag = True
 
 while(continue_flag):
+    print("-----------------------------------")
     print("current State", curr_state)
+    print("current Contexts", curr_contexts)
+
     possible_next_pattern_vectors = get_possible_next_pattern_vectors(curr_state)
-    possible_next_states = [ns for pat_vec, pat, ns in possible_next_pattern_vectors]
+    possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
     print(possible_next_states)
 
     inp = input()
+    rating, pat, next_state = get_closest_command(possible_next_pattern_vectors, inp)
+    required_contexts = get_context_require_from_intent(next_state)
 
     if inp == 'end':
         continue_flag = False
-    else:
-        curr_state = inp
+        continue
+    if rating < 0.6:
+        print("sry, didn't understand you!")
+        continue
+    if not set(required_contexts).issubset(set(curr_contexts)):
+        lacking_context = list(set(required_contexts)-set(curr_contexts))
+        print("sry, you lack context", lacking_context, "to do this")
+        continue
+    curr_state = next_state
+    curr_contexts.extend(get_context_set_from_intent(next_state))
+    print(get_response_from_intent(curr_state))
 
+
+
+
+
+#######################################################################################################
+# Graveyard
+
+def get_possible_next_states(curr_state):
+    edges = [ member for member in input_data if "start_states" in member]
+    next_states = [ member["end_state"] for member in edges 
+                    if curr_state in member["start_states"]]
+    return next_states
+
+
+def get_possible_next_patterns(curr_state):
+    edges = [ member for member in input_data if "start_states" in member]
+    next_states = [ (patt, member["end_state"]) for member in edges for patt in member["patterns"]
+                    if curr_state in member["start_states"]]
+    return next_states
