@@ -93,7 +93,7 @@ for edge in input_data_edges:
     pattern_vectors = word_vectorizer.transform(patterns)
     edge["pattern_vectors"] = pattern_vectors
 
-def get_possible_next_pattern_vectors(curr_state):
+def get_possible_next_pattern_vectors_old(curr_state):
     # returns [(pat_vec, pat, end_state)]
     next_states = [ (member["pattern_vectors"][i_vec], 
                     member["patterns"][i_vec],
@@ -101,6 +101,17 @@ def get_possible_next_pattern_vectors(curr_state):
                     for member in input_data_edges 
                     for i_vec in range(member["pattern_vectors"].shape[0])
                     if curr_state in member["start_states"]]
+    return next_states
+
+def get_possible_next_pattern_vectors(curr_state, curr_contexts):
+    # returns [(pat_vec, pat, end_state)]
+    next_states = [ (edge["pattern_vectors"][i_vec], 
+                    edge["patterns"][i_vec],
+                    edge["end_state"]) 
+                    for edge in input_data_edges 
+                    for i_vec in range(edge["pattern_vectors"].shape[0])
+                    if curr_state in edge["start_states"]
+                    and set(get_context_require_from_intent(edge["end_state"])).issubset(set(curr_contexts))]
     return next_states
 
 def get_closest_command(possible_next_pattern_vectors: list, inp:str):
@@ -140,7 +151,8 @@ while(continue_flag):
     print("current State", curr_state)
     print("current Contexts", curr_contexts)
 
-    possible_next_pattern_vectors = get_possible_next_pattern_vectors(curr_state)
+    # possible_next_pattern_vectors = get_possible_next_pattern_vectors_old(curr_state)
+    possible_next_pattern_vectors = get_possible_next_pattern_vectors(curr_state, curr_contexts)
     possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
     print(possible_next_states)
 
