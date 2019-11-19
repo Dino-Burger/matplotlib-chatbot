@@ -1,5 +1,60 @@
-def plot_parser(input_string):
-    return (input_string.split(), True)
+import pandas as pd
+import numpy as np
+
+def is_number(x):
+    result = isinstance(x, float) or isinstance(x, int)
+    return result
+
+def all_numbers(my_list):
+    return all(map(is_number, my_list))
+
+def get_plotting_candidates():
+    candidates = []
+    for n,v in globals().items():
+        if isinstance(v, pd.DataFrame):
+            candidates.append(n)
+            candidates.extend(n + "['" + field + "']" for field in v.columns)
+            candidates.extend(n + '["' + field + '"]' for field in v.columns)
+        elif isinstance(v, list):
+            if all_numbers(v) and len(v)>0:
+                candidates.append(n)
+        elif isinstance(v, np.ndarray):
+            if len(v.shape)==1:
+                candidates.append(n)
+            elif len(v.shape)==2:
+                candidates.append(n)
+            else:
+                pass 
+    return candidates
+
+import re
+def var_names_by_regex(in_string):
+    import re
+    pattern1 = re.compile(r"""of +([a-z\[\]'"0-9]+)""", re.IGNORECASE)
+    match1 = pattern1.findall(in_string)
+    result1 = match1
+    
+    pattern2 = re.compile(r"""plot +([a-z\[\]'"0-9]+)""", re.IGNORECASE)
+    match2 = pattern2.findall(in_string)
+    result2 = [x for x in match2 if x.lower() != 'of']
+
+    result = result1 + result2
+    return result
+
+def plot_parser(in_string):
+    names = var_names_by_regex(in_string)
+    if len(names)==1:
+        name = names[0]
+        if name in get_plotting_candidates():
+            result = ["plt.plot("+name+")"]
+            return result, True
+        else:
+            print(name, "does not seem to be a printable variable")
+            return [], False
+    else:
+        print("Found either too few or too many potential variables", names)
+        return [], False
+
 
 input_data_raw = [
     # entry
@@ -154,6 +209,7 @@ def get_field_from_intent(field_name, intent, default=[]):
 
 # versuch für etwas interaktives
 
+from matplotlib import pyplot as plt
 curr_state = "entry"
 curr_contexts = []
 all_commands = ['from matplotlib import pyplot as plt']
@@ -187,14 +243,22 @@ while(continue_flag):
 
     parser = get_field_from_intent("code_command",next_state, default=lambda x: ([],True))
     new_commands, success_flag = parser(inp)
+    
+    if not success_flag:
+        print("soory, something went wrong")
+        continue
+
     all_commands.extend(new_commands)
 
     print('\n'.join(all_commands))
+    [ exec(bla) for bla in all_commands ]
+    plt.show()
 
     curr_state = next_state
     curr_contexts.extend(get_context_set_from_intent(next_state))
     print(get_response_from_intent(curr_state))
-
+print("bye")
+print('\n'.join(all_commands))
 
 
 
