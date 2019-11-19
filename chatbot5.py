@@ -1,3 +1,6 @@
+def plot_parser(input_string):
+    return (input_string.split(), True)
+
 input_data_raw = [
     # entry
     # No incoming connections for "entry"
@@ -11,7 +14,8 @@ input_data_raw = [
 
     {   "intent": "plot",
         "response": "", 
-        "context_set": ["has_plotted"],},
+        "context_set": ["has_plotted"],
+        "code_command": plot_parser, },
    
     # hist
     {   "start_states": ["*"],
@@ -50,7 +54,8 @@ input_data_raw = [
 
     {   "intent": "add_legend_top_left",
         "response": "", 
-        "context_require" : ["has_plotted"],},    
+        "context_require" : ["has_plotted"],
+        "code_command": lambda x: (["plt.legend(['test'], loc='upper left')"],True),},    
 
     # add_legend_top_right
     {   "start_states": ["add_legend"],
@@ -62,9 +67,11 @@ input_data_raw = [
 
     {   "intent": "add_legend_top_right",
         "response": "", 
-        "context_require" : ["has_plotted"],},    
+        "context_require" : ["has_plotted"],
+        "code_command": lambda x: (["plt.legend(['test'], loc='upper right')"],True),},    
 
 ]
+
 
 def process_input_data(input_data):
     # replace ["*"] in start_states by actual list of all states
@@ -139,12 +146,19 @@ def get_context_set_from_intent(intent):
     assert(len(response)==1)
     return response[0]
 
+def get_field_from_intent(field_name, intent, default=[]):
+    response = [ node.get(field_name, default) for node in input_data_nodes
+                    if node['intent'] == intent]
+    assert(len(response)==1)
+    return response[0]
 
 # versuch für etwas interaktives
 
 curr_state = "entry"
 curr_contexts = []
+all_commands = ['from matplotlib import pyplot as plt']
 continue_flag = True
+
 
 while(continue_flag):
     print("-----------------------------------")
@@ -170,6 +184,13 @@ while(continue_flag):
         lacking_context = list(set(required_contexts)-set(curr_contexts))
         print("sry, you lack context", lacking_context, "to do this")
         continue
+
+    parser = get_field_from_intent("code_command",next_state, default=lambda x: ([],True))
+    new_commands, success_flag = parser(inp)
+    all_commands.extend(new_commands)
+
+    print('\n'.join(all_commands))
+
     curr_state = next_state
     curr_contexts.extend(get_context_set_from_intent(next_state))
     print(get_response_from_intent(curr_state))
