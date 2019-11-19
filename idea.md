@@ -80,6 +80,8 @@ In a first iteration, only closed commands should be given; this also makes it e
 - [Torch intent parsing](https://github.com/spro/torch-seq2seq-intent-parsing)
 - [The same in pytorch?](https://github.com/spro/pytorch-seq2seq-intent-parsing)
 - [My first Chatbot with rasa](https://medium.com/@lotass/my-first-chatbot-14c5e2f64783)
+- [Rasa af some pyconf](https://www.youtube.com/watch?v=krOhH0RKQ6A)
+- [Github for above](https://github.com/RasaHQ/rasa-workshop-pydata-nyc/blob/master/rasa-pydatanyc-workshop-starter.ipynb)
 
 
 
