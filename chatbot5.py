@@ -125,6 +125,17 @@ input_data_raw = [
         "context_require" : ["has_plotted"],
         "code_command": lambda x: (["plt.legend(['test'], loc='upper right')"],True),},    
 
+    # add Styles -- this is really bad without parametrization!!
+    ## start with xkcd
+     {   "start_states": ["*"],
+        "end_state": "xkcd_on",
+        "patterns": ["draw in xkcd style", "xkcd on"] },
+
+    {   "intent": "xkcd_on",
+        "response": "", 
+        "code_command": lambda x: (["plt.xkcd(scale=1, length=100, randomness=2)"],True),},    
+   
+
 ]
 
 

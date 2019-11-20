@@ -97,6 +97,16 @@ In a first iteration, only closed commands should be given; this also makes it e
 
 ## Goal
 
+# Second call with Tristan
+## Potential questions
+- Do you know rasa? If yes, what do you think of it?
+- What are the next steps implementation-wise?
+  - Code clean-up or is it roughly ok?
+  - Bigger graph?
+- How to attack the question of slot filling?
+
+
+
 # Notes on references
 - hello
   my dear
