@@ -103,7 +103,9 @@ In a first iteration, only closed commands should be given; this also makes it e
 - What are the next steps implementation-wise?
   - Code clean-up or is it roughly ok?
   - Bigger graph?
+  - Is my understanding of Nodes and edges ok?
 - How to attack the question of slot filling?
+- less important: How to model multi-intent in a sentence?
 
 
 
