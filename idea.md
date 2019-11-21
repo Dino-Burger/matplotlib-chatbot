@@ -108,6 +108,9 @@ In a first iteration, only closed commands should be given; this also makes it e
 - less important: How to model multi-intent in a sentence?
 
 
+Goal: "plot me column x of dataframe df vs column y as a histogram"
+
+
 
 # Notes on references
 - hello
