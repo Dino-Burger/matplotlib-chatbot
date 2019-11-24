@@ -11,56 +11,59 @@ sentences = [
 ]
 
 variable_train_values = {
-    'color': list(matplotlib.colors.CSS4_COLORS.keys()),
-    'columnname': ['a', 'b'],
-    'variable': ['df', 'dg', ],
-    'ordinal': ['first', 'second', 'third', 'fourth', 'fifth', ],
+    '$color': ['red', 'green'], #list(matplotlib.colors.CSS4_COLORS.keys()),
+    '$columnname': ['a', 'b'],
+    '$variable': ['df', 'dg', ],
+    '$ordinal': ['first', 'second', 'third', 'fourth', 'fifth', ],
         # does spacy provide something for numbers already?
-    'position': [ 'top left', 'top right', 'bottom left', 'bottom right', ],
+    '$position': [ 'top left', 'top right', 'bottom left', 'bottom right', ],
 }
 
 
+
+
+ts = [ "my $color and your $color and the other $color",
+        "plot column $columnname from variable $variable" ]
+tss = [ t.split() for t in ts ]
+
+def get_vars(str_list):
+    return [(i,x) for i,x in enumerate(str_list) if x[0]=='$']
+
+tsi = [ (t,get_vars(t)) for t in tss ]
+
+import itertools
+import copy
+import numpy as np
 
 result = []
-sentence = "plot column $columnname from variable $variable"
-sentence_as_tokens = sentence.split()
-variables_in_sentence = [(i,x) for i,x in enumerate(sentence_as_tokens) if x[0]=='$']
-var_index, var_name_raw = variables_in_sentence[0]
-var_name = var_name_raw[1:]
-
-sentence_structure = { 
-    'sentence_list': ['plot', 'column', '$columnname', 'from', 'variable', '$variable'],
-    'replaced_tags': [],
-}
-
-import copy
-
-def explode_single_variable(sentence_structure, var_name, var_index):
-    # sentence_structure -> [ sentence_structure ]
-    result = []
-    for var_value in variable_train_values[var_name]:
-        new_inp_val = copy.deepcopy(sentence_structure)
-        new_inp_val['sentence_list'][var_index] = var_value
-        new_inp_val['replaced_tags'].append((var_index, var_name))
-        result.append(new_inp_val)
-    return result
+for t, ti in tsi:
+    ti_vars = [ variable_train_values[ti_var] for ti_i, ti_var in ti ]
+    ti_is = [ ti_i for ti_i, ti_var in ti ]
+    for element in itertools.product(*ti_vars):
+        #print(t, ti_is, element)
+        new_t = copy.deepcopy(t)
+        for overwrite_index, overwrite_string in zip(ti_is, element):
+            new_t[overwrite_index] = overwrite_string
+        result.append((new_t, ti))
 
 
+result2 = []
+for tokenized_sentence, variable_list in result:
+    # the +1 is for the spaces we insert
+    token_lenghts = [ len(ts)+1 for ts in tokenized_sentence ]
+    token_cum_lengths = [0,] + list(np.cumsum(token_lenghts))
+    
+    sentence = ' '.join(tokenized_sentence)
+    # the -1 is to ignore the trailing space
+    containded_tokens = [ (token_cum_lengths[var_index], 
+                            token_cum_lengths[var_index+1]-1, 
+                            var_name) 
+                            for var_index, var_name in variable_list ]
 
-
-
+    result2.append((sentence, containded_tokens))
 
 
 
-def blabla(string_list, found_tag_list):
-    pass
 
 
 
-#for curr_variable in variables_in_sentence:
-#    start_position = sentence.find
-
-
-
-def explode_sentences(sentences, variable_train_values):
-    pass
