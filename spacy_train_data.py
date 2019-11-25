@@ -68,4 +68,14 @@ def fill_examples_variables(sentences, variable_train_values):
     return joined_sentences
 
 
+train_data_raw = fill_examples_variables(sentences, variable_train_values)
+train_data_spacy = [ (sent, {'entities': var }) for sent, var in train_data_raw]
+
+mynlp = train_spacy(train_data_spacy, 20)
+
+test_text = "plot df"
+doc = mynlp(test_text)
+for ent in doc.ents:
+    print(ent.text, ent.start_char, ent.end_char, ent.label_)
+
 
