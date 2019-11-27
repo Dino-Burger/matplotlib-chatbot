@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
 .vscode
-
+testdata/
+test.spacy/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

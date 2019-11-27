@@ -278,8 +278,34 @@ while(continue_flag):
 print("bye")
 print('\n'.join(all_commands))
 
+#######################################################################################################
+# Future
 
+# Change the thing to operate more on variables and fixed code blocks as follows:
+# Fill somehow:
+variables_to_plot = [ df['a'], df['b'], x ]
+plotting_style = 'seaborn'
+plotting_command = 'plot' # vs 'scatter', 'hist'
 
+# on calling plot
+plotting_code = { 
+    'plot': """
+with plt.style.context(plotting_style):
+    for plot_var in variables_to_plot:
+        plt.plot(plot_var)
+""",
+    'scatter': """
+
+""",
+    'hist': """
+""",
+    'list_files':"""
+os.listdir("./testdata/")
+""",
+
+}
+
+# create similar code blocks for scatter plot, histogram, etc. 
 
 #######################################################################################################
 # Graveyard
