@@ -306,6 +306,13 @@ os.listdir("./testdata/")
 }
 
 # create similar code blocks for scatter plot, histogram, etc. 
+#######################################################################################################
+# Future structure
+# create 
+# - a class file
+# - a file with all the helper functions
+# - a config file with the graph
+# - the spacy_train_data.py which is called in case test.spacy is not present
 
 #######################################################################################################
 # Graveyard
