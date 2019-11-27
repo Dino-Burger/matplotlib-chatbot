@@ -55,12 +55,33 @@ def plot_parser(in_string):
         print("Found either too few or too many potential variables", names)
         return [], False
 
+def list_csv_parser(state_in, user_input):
+    try:
+        state_in['csv_list'] = [ file for file in os.listdir("./testdata/") 
+                                                if file.endswith(".csv")]
+        print("we found the following files for you:")
+        for ind, csv in enumerate(state_in['csv_list']):
+            print(ind, ":", csv)
+    except:
+        state_in['csv_list'] = None
+        print("something went wrong")
+    return state_in
+    
 
 input_data_raw = [
     # entry
     # No incoming connections for "entry"
     {   "intent": "entry",
         "response": "Welcome!", },
+
+    # list_csv
+    {   "start_states": ["*"],
+        "end_state": "list_csv",
+        "patterns": ["list files", "list csv",] },
+
+    {   "intent": "list_csv",
+        "response": "", 
+        "code_command": list_csv_parser, },
 
     # plot
     {   "start_states": ["*"],
@@ -230,7 +251,14 @@ nn = np.random.normal(size=(2,3))
 from matplotlib import pyplot as plt
 curr_state = "entry"
 curr_contexts = []
-all_commands = ['from matplotlib import pyplot as plt']
+
+all_variables = {
+    'csv_list': None,
+    'variables_to_plot': [ df['a'], df['b'], x ],
+    'plotting_style': 'seaborn',
+    'plotting_command': 'plot', # vs 'scatter', 'hist'    
+    'all_commands': ['from matplotlib import pyplot as plt'],
+}
 continue_flag = True
 
 
@@ -300,7 +328,7 @@ with plt.style.context(plotting_style):
     'hist': """
 """,
     'list_files':"""
-os.listdir("./testdata/")
+[ file for file in os.listdir("./testdata/") if file.endswith(".csv") ]
 """,
 
 }
