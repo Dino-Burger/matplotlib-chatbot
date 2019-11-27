@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 def is_number(x):
     result = isinstance(x, float) or isinstance(x, int)
@@ -41,19 +42,20 @@ def var_names_by_regex(in_string):
     result = result1 + result2
     return result
 
-def plot_parser(in_string):
-    names = var_names_by_regex(in_string)
+def plot_parser(state_in, user_input):
+    names = var_names_by_regex(user_input)
     if len(names)==1:
         name = names[0]
         if name in get_plotting_candidates():
-            result = ["plt.plot("+name+")"]
-            return result, True
+            temp_var = globals()[name]
+            state_in['variables_to_plot'].append(temp_var)
+            print("adding", name, "to the plot")
         else:
             print(name, "does not seem to be a printable variable")
-            return [], False
     else:
         print("Found either too few or too many potential variables", names)
-        return [], False
+    exec(plotting_code['plot'], globals(), all_variables)
+    return state_in
 
 def list_csv_parser(state_in, user_input):
     try:
@@ -67,6 +69,17 @@ def list_csv_parser(state_in, user_input):
         print("something went wrong")
     return state_in
     
+def add_legend_top_left_parser(state_in, user_input):
+    print("adding legend to the left")
+    state_in['legend_location'] = "top left"
+    exec(plotting_code['plot'], globals(), all_variables)
+    return state_in
+
+def add_legend_top_right_parser(state_in, user_input):
+    print("adding legend to the right")
+    state_in['legend_location'] = "top right"
+    exec(plotting_code['plot'], globals(), all_variables)
+    return state_in
 
 input_data_raw = [
     # entry
@@ -131,7 +144,7 @@ input_data_raw = [
     {   "intent": "add_legend_top_left",
         "response": "", 
         "context_require" : ["has_plotted"],
-        "code_command": lambda x: (["plt.legend(['test'], loc='upper left')"],True),},    
+        "code_command": add_legend_top_left_parser,},    
 
     # add_legend_top_right
     {   "start_states": ["add_legend"],
@@ -144,7 +157,7 @@ input_data_raw = [
     {   "intent": "add_legend_top_right",
         "response": "", 
         "context_require" : ["has_plotted"],
-        "code_command": lambda x: (["plt.legend(['test'], loc='upper right')"],True),},    
+        "code_command": add_legend_top_right_parser,},    
 
     # add Styles -- this is really bad without parametrization!!
     ## start with xkcd
@@ -254,8 +267,9 @@ curr_contexts = []
 
 all_variables = {
     'csv_list': None,
-    'variables_to_plot': [ df['a'], df['b'], x ],
+    'variables_to_plot': [ ],
     'plotting_style': 'seaborn',
+    'legend_location': None,
     'plotting_command': 'plot', # vs 'scatter', 'hist'    
     'all_commands': ['from matplotlib import pyplot as plt'],
 }
@@ -287,24 +301,16 @@ while(continue_flag):
         print("sry, you lack context", lacking_context, "to do this")
         continue
 
-    parser = get_field_from_intent("code_command",next_state, default=lambda x: ([],True))
-    new_commands, success_flag = parser(inp)
+    parser = get_field_from_intent("code_command",
+                                    next_state, 
+                                    default=lambda all_variables, inp: all_variables)
+    all_variables = parser(all_variables, inp)
     
-    if not success_flag:
-        print("soory, something went wrong")
-        continue
-
-    all_commands.extend(new_commands)
-
-    print('\n'.join(all_commands))
-    [ exec(bla) for bla in all_commands ]
-    plt.show()
-
     curr_state = next_state
     curr_contexts.extend(get_context_set_from_intent(next_state))
     print(get_response_from_intent(curr_state))
 print("bye")
-print('\n'.join(all_commands))
+print('\n'.join(all_variables['all_commands']))
 
 #######################################################################################################
 # Future
@@ -321,6 +327,7 @@ plotting_code = {
 with plt.style.context(plotting_style):
     for plot_var in variables_to_plot:
         plt.plot(plot_var)
+    plt.show()
 """,
     'scatter': """
 
