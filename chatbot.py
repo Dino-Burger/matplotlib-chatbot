@@ -83,74 +83,67 @@ def get_field_from_intent(field_name, intent, default=[]):
     assert(len(response)==1)
     return response[0]
 
-# versuch für etwas interaktives
-## some variables
-x= [1,2,4,5,6]
-height = [1,1,1,2,2,]
-df = pd.DataFrame({'a':[1,2,3], 'b':[4,5,6]})
-nn = np.random.normal(size=(2,3))
 
 
 
-from matplotlib import pyplot as plt
-curr_state = "entry"
-curr_contexts = []
 
-all_variables = {
-    'csv_list': None,
-    'variables_to_plot': [ ],
-    'plotting_style': 'seaborn',
-    'legend_location': None,
-    'plotting_command': 'plot', # vs 'scatter', 'hist'    
-    'all_commands': ['from matplotlib import pyplot as plt'],
-}
-continue_flag = True
+class Chatbot:
+    def __init__(self,local_variables):
+        self.local_variables = local_variables
+    def run(self):
+        from matplotlib import pyplot as plt
+        curr_state = "entry"
+        curr_contexts = []
+
+        all_variables = {
+            'csv_list': None,
+            'variables_to_plot': [ ],
+            'plotting_style': 'seaborn',
+            'legend_location': None,
+            'plotting_command': 'plot', # vs 'scatter', 'hist'    
+            'all_commands': ['from matplotlib import pyplot as plt'],
+        }
+        continue_flag = True
 
 
-while(continue_flag):
-    print("-----------------------------------")
-    print("current State", curr_state)
-    print("current Contexts", curr_contexts)
+        while(continue_flag):
+            print("-----------------------------------")
+            print("current State", curr_state)
+            print("current Contexts", curr_contexts)
 
-    # possible_next_pattern_vectors = get_possible_next_pattern_vectors_old(curr_state)
-    possible_next_pattern_vectors = get_possible_next_pattern_vectors(curr_state, curr_contexts)
-    possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
-    print(possible_next_states)
+            # possible_next_pattern_vectors = get_possible_next_pattern_vectors_old(curr_state)
+            possible_next_pattern_vectors = get_possible_next_pattern_vectors(curr_state, curr_contexts)
+            possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
+            print(possible_next_states)
 
-    inp = input()
-    rating, pat, next_state = get_closest_command(possible_next_pattern_vectors, inp)
-    required_contexts = get_context_require_from_intent(next_state)
+            inp = input()
+            rating, pat, next_state = get_closest_command(possible_next_pattern_vectors, inp)
+            required_contexts = get_context_require_from_intent(next_state)
 
-    if inp == 'end':
-        continue_flag = False
-        continue
-    if rating < 0.6:
-        print("sry, didn't understand you!")
-        continue
-    if not set(required_contexts).issubset(set(curr_contexts)):
-        lacking_context = list(set(required_contexts)-set(curr_contexts))
-        print("sry, you lack context", lacking_context, "to do this")
-        continue
+            if inp == 'end':
+                continue_flag = False
+                continue
+            if rating < 0.6:
+                print("sry, didn't understand you!")
+                continue
+            if not set(required_contexts).issubset(set(curr_contexts)):
+                lacking_context = list(set(required_contexts)-set(curr_contexts))
+                print("sry, you lack context", lacking_context, "to do this")
+                continue
 
-    parser = get_field_from_intent("code_command",
-                                    next_state, 
-                                    default=lambda all_variables, inp: all_variables)
-    all_variables = parser(all_variables, inp)
-    
-    curr_state = next_state
-    curr_contexts.extend(get_context_set_from_intent(next_state))
-    print(get_response_from_intent(curr_state))
-print("bye")
-print('\n'.join(all_variables['all_commands']))
+            parser = get_field_from_intent("code_command",
+                                            next_state, 
+                                            default=lambda all_variables, inp: all_variables)
+            all_variables = parser(all_variables, inp)
+            
+            curr_state = next_state
+            curr_contexts.extend(get_context_set_from_intent(next_state))
+            print(get_response_from_intent(curr_state))
+        print("bye")
+
 
 #######################################################################################################
 # Future
-
-# Change the thing to operate more on variables and fixed code blocks as follows:
-# Fill somehow:
-variables_to_plot = [ df['a'], df['b'], x ]
-plotting_style = 'seaborn'
-plotting_command = 'plot' # vs 'scatter', 'hist'
 
 
 
