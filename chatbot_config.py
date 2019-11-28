@@ -85,6 +85,9 @@ def add_legend_top_right_parser(state_in, user_input, local_vars):
 plotting_code = { 
     'plot': """
 from matplotlib import pyplot as plt
+import matplotlib
+plt.close()
+matplotlib.interactive(True)
 with plt.style.context(plotting_style):
     for plot_var in variables_to_plot:
         plt.plot(plot_var)
