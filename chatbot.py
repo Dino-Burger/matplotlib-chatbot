@@ -3,53 +3,13 @@ import numpy as np
 import importlib
 
 
-
-def process_input_data(input_data):
-    # replace ["*"] in start_states by actual list of all states
-    all_intents = [member["intent"] for member in input_data if "intent" in member]
-    for member in input_data:
-        if "start_states" in member and member["start_states"] == ["*"]:
-            member["start_states"] = all_intents
-    return input_data
-
-
-
-
-
-
-
-
-def get_response_from_intent(intent):
-    response = [ node.get("response", "") for node in input_data_nodes
-                    if node['intent'] == intent]
-    assert(len(response)==1)
-    return response[0]
-
-def get_context_require_from_intent(intent):
-    response = [ node.get("context_require", []) for node in input_data_nodes
-                    if node['intent'] == intent]
-    assert(len(response)==1)
-    return response[0]
-
-def get_context_set_from_intent(intent):
-    response = [ node.get("context_set", []) for node in input_data_nodes
-                    if node['intent'] == intent]
-    assert(len(response)==1)
-    return response[0]
-
-
-
-
-
-
-
 class Chatbot:
     def __init__(self, local_vars, config_file = 'chatbot_config'):
         self.local_vars = local_vars
 
         self.conf = importlib.import_module(config_file)
 
-        self.input_data = process_input_data(self.conf.input_data_raw)
+        self.input_data = self.process_input_data(self.conf.input_data_raw)
         self.input_data_edges = [ member for member in self.input_data if "start_states" in member]
         self.input_data_nodes = [ member for member in self.input_data if "intent" in member]
 
@@ -67,6 +27,15 @@ class Chatbot:
             pattern_vectors = self.word_vectorizer.transform(patterns)
             edge["pattern_vectors"] = pattern_vectors
 
+    def process_input_data(self, input_data):
+        # replace ["*"] in start_states by actual list of all states
+        all_intents = [member["intent"] for member in input_data if "intent" in member]
+        for member in input_data:
+            if "start_states" in member and member["start_states"] == ["*"]:
+                member["start_states"] = all_intents
+        return input_data
+
+
     def get_possible_next_pattern_vectors(self, curr_state, curr_contexts):
         # returns [(pat_vec, pat, end_state)]
         next_states = [ (edge["pattern_vectors"][i_vec], 
@@ -75,7 +44,7 @@ class Chatbot:
                         for edge in self.input_data_edges 
                         for i_vec in range(edge["pattern_vectors"].shape[0])
                         if curr_state in edge["start_states"]
-                        and set(get_context_require_from_intent(edge["end_state"])).issubset(set(curr_contexts))]
+                        and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(set(curr_contexts))]
         return next_states
 
     def get_closest_command(self, possible_next_pattern_vectors: list, inp:str):
@@ -120,7 +89,7 @@ class Chatbot:
 
             inp = input()
             rating, pat, next_state = self.get_closest_command(possible_next_pattern_vectors, inp)
-            required_contexts = get_context_require_from_intent(next_state)
+            required_contexts = self.get_field_from_intent("context_require", next_state)
 
             if inp == 'end':
                 continue_flag = False
@@ -139,8 +108,8 @@ class Chatbot:
             all_variables = parser(all_variables, inp, self.local_vars)
             
             curr_state = next_state
-            curr_contexts.extend(get_context_set_from_intent(next_state))
-            print(get_response_from_intent(curr_state))
+            curr_contexts.extend(self.get_field_from_intent("context_set", next_state))
+            print(self.get_field_from_intent("response", curr_state, ""))
         print("bye")
 
 
