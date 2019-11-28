@@ -86,7 +86,7 @@ plotting_code = {
     'plot': """
 from matplotlib import pyplot as plt
 import matplotlib
-plt.close()
+plt.clf()
 matplotlib.interactive(True)
 with plt.style.context(plotting_style):
     for plot_var in variables_to_plot:
