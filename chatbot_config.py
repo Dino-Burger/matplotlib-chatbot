@@ -9,9 +9,9 @@ def is_number(x):
 def all_numbers(my_list):
     return all(map(is_number, my_list))
 
-def get_plotting_candidates():
+def get_plotting_candidates(local_vars):
     candidates = []
-    for n,v in globals().items():
+    for n,v in local_vars.items():
         if isinstance(v, pd.DataFrame):
             candidates.append(n)
             candidates.extend(n + "['" + field + "']" for field in v.columns)
@@ -42,12 +42,12 @@ def var_names_by_regex(in_string):
     result = result1 + result2
     return result
 
-def plot_parser(state_in, user_input):
+def plot_parser(state_in, user_input, local_vars):
     names = var_names_by_regex(user_input)
     if len(names)==1:
         name = names[0]
-        if name in get_plotting_candidates():
-            temp_var = globals()[name]
+        if name in get_plotting_candidates(local_vars):
+            temp_var = local_vars[name]
             state_in['variables_to_plot'].append(temp_var)
             print("adding", name, "to the plot")
         else:
@@ -57,7 +57,7 @@ def plot_parser(state_in, user_input):
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
 
-def list_csv_parser(state_in, user_input):
+def list_csv_parser(state_in, user_input, local_vars):
     try:
         state_in['csv_list'] = [ file for file in os.listdir("./testdata/") 
                                                 if file.endswith(".csv")]
@@ -69,13 +69,13 @@ def list_csv_parser(state_in, user_input):
         print("something went wrong")
     return state_in
     
-def add_legend_top_left_parser(state_in, user_input):
+def add_legend_top_left_parser(state_in, user_input, local_vars):
     print("adding legend to the left")
     state_in['legend_location'] = "top left"
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
 
-def add_legend_top_right_parser(state_in, user_input):
+def add_legend_top_right_parser(state_in, user_input, local_vars):
     print("adding legend to the right")
     state_in['legend_location'] = "top right"
     exec(plotting_code['plot'], globals(), state_in)

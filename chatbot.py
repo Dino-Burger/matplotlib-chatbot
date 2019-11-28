@@ -88,8 +88,8 @@ def get_field_from_intent(field_name, intent, default=[]):
 
 
 class Chatbot:
-    def __init__(self,local_variables):
-        self.local_variables = local_variables
+    def __init__(self,local_vars):
+        self.local_vars = local_vars
     def run(self):
         from matplotlib import pyplot as plt
         curr_state = "entry"
@@ -133,8 +133,8 @@ class Chatbot:
 
             parser = get_field_from_intent("code_command",
                                             next_state, 
-                                            default=lambda all_variables, inp: all_variables)
-            all_variables = parser(all_variables, inp)
+                                            default=lambda all_variables, inp, local_vars: all_variables)
+            all_variables = parser(all_variables, inp, self.local_vars)
             
             curr_state = next_state
             curr_contexts.extend(get_context_set_from_intent(next_state))
