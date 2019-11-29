@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
+import matplotlib
+import matplotlib.pyplot as plt
+from editdistance import eval as lev_dist
 
 def is_number(x):
     result = isinstance(x, float) or isinstance(x, int)
@@ -54,7 +57,7 @@ def plot_parser(state_in, user_input, local_vars):
             print(name, "does not seem to be a printable variable")
     else:
         print("Found either too few or too many potential variables", names)
-    exec(plotting_code['plot'], globals(), state_in)
+    exec(plotting_code['plot'], local_vars, state_in)
     return state_in
 
 def list_csv_parser(state_in, user_input, local_vars):
@@ -69,17 +72,39 @@ def list_csv_parser(state_in, user_input, local_vars):
         print("something went wrong")
     return state_in
     
-def add_legend_top_left_parser(state_in, user_input, local_vars):
+def add_legend_upper_left_parser(state_in, user_input, local_vars):
     print("adding legend to the left")
-    state_in['legend_location'] = "top left"
+    state_in['legend_location'] = "upper left"
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
 
-def add_legend_top_right_parser(state_in, user_input, local_vars):
+def add_legend_upper_right_parser(state_in, user_input, local_vars):
     print("adding legend to the right")
-    state_in['legend_location'] = "top right"
+    state_in['legend_location'] = "upper right"
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
+
+import spacy
+spacy_model = spacy.load("test.spacy")
+
+def style_parser(state_in, user_input, local_vars):
+    doc = spacy_model(user_input)
+    style_candidates = [ ent.text for ent in doc.ents if ent.label_ == '$style' ]
+    if len(style_candidates) != 1:
+        print("sorry, could not parse this")
+    else:
+        style_candidate = style_candidates[0]
+        styles_available = plt.style.available
+        styles_available_with_distance = [ (sa,lev_dist(sa,style_candidate)) 
+                                            for sa in styles_available ]
+        sa, sa_dist = min(styles_available_with_distance, key=lambda x: x[1])
+        if sa_dist > 3:
+            print("sorry, I could not find this style")
+        else:
+            state_in['plotting_style'] = sa
+    exec(plotting_code['plot'], globals(), state_in)
+    return state_in
+
 
 # on calling plot
 plotting_code = { 
@@ -91,6 +116,8 @@ matplotlib.interactive(True)
 with plt.style.context(plotting_style):
     for plot_var in variables_to_plot:
         plt.plot(plot_var)
+    if legend_location:
+        plt.legend(['test'], loc=legend_location)
     plt.show()
 """,
     'scatter': """
@@ -156,41 +183,50 @@ input_data_raw = [
         "response": "Would you like to place the legend to the left or the right?", 
         "context_require" : ["has_plotted"],},    
 
-    # add_legend_top_left
+    # add_legend_upper_left
     {   "start_states": ["add_legend"],
-        "end_state": "add_legend_top_left",
-        "patterns": ["top left", ] },
+        "end_state": "add_legend_upper_left",
+        "patterns": ["upper left", ] },
     {   "start_states": ["*"],
-        "end_state": "add_legend_top_left",
-        "patterns": ["add legend top left", "add description top left"] },
+        "end_state": "add_legend_upper_left",
+        "patterns": ["add legend upper left", "add description upper left"] },
 
-    {   "intent": "add_legend_top_left",
+    {   "intent": "add_legend_upper_left",
         "response": "", 
         "context_require" : ["has_plotted"],
-        "code_command": add_legend_top_left_parser,},    
+        "code_command": add_legend_upper_left_parser,},    
 
-    # add_legend_top_right
+    # add_legend_upper_right
     {   "start_states": ["add_legend"],
-        "end_state": "add_legend_top_right",
-        "patterns": ["top right", ] },
+        "end_state": "add_legend_upper_right",
+        "patterns": ["upper right", ] },
     {   "start_states": ["*"],
-        "end_state": "add_legend_top_right",
-        "patterns": ["add legend top right", "add description top right"] },
+        "end_state": "add_legend_upper_right",
+        "patterns": ["add legend upper right", "add description upper right"] },
 
-    {   "intent": "add_legend_top_right",
+    {   "intent": "add_legend_upper_right",
         "response": "", 
         "context_require" : ["has_plotted"],
-        "code_command": add_legend_top_right_parser,},    
+        "code_command": add_legend_upper_right_parser,},    
 
     # add Styles -- this is really bad without parametrization!!
     ## start with xkcd
-     {   "start_states": ["*"],
+    {   "start_states": ["*"],
         "end_state": "xkcd_on",
         "patterns": ["draw in xkcd style", "xkcd on"] },
 
     {   "intent": "xkcd_on",
         "response": "", 
         "code_command": lambda x: (["plt.xkcd(scale=1, length=100, randomness=2)"],True),},    
-   
+
+    # add Styles -- this is really bad without parametrization!!
+    {   "start_states": ["*"],
+        "end_state": "style",
+        "patterns": ["set style as", "enable style as", "change style to"] },
+
+    {   "intent": "style",
+        "response": "", 
+        "code_command": style_parser,},    
+
 
 ]

@@ -13,6 +13,9 @@ sentences = [
     "plot me the $ordinal",
     "add a legend",
     "add a legend to the $position",
+    "set style as $style", 
+    "enable style as $style", 
+    "change style to $style"
 ]
 
 variable_train_values = {
@@ -21,7 +24,8 @@ variable_train_values = {
     '$variable': ['df', 'dg', ],
     '$ordinal': ['first', 'second', 'third', 'fourth', 'fifth', ],
         # does spacy provide something for numbers already?
-    '$position': [ 'top left', 'top right', 'bottom left', 'bottom right', ],
+    '$position': [ 'upper left', 'upper right', 'bottom left', 'bottom right', ],
+    '$style': ['dark_background', 'grayscale', 'seaborn-ticks'],
 }
 
 
@@ -114,10 +118,10 @@ mynlp = train_spacy(train_data_spacy, 20)
 
 mynlp.to_disk("test.spacy")
 
-mynlp2 = spacy.load("test.spacy")
 
-test_text = "plot df"
-doc = mynlp2(test_text)
+
+test_text = "change style to ggplot"
+doc = mynlp(test_text)
 for ent in doc.ents:
     print(ent.text, ent.start_char, ent.end_char, ent.label_)
 

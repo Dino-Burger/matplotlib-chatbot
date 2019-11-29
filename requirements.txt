@@ -1,0 +1,8 @@
+# Manually done
+matplotlib
+spacy
+numpy
+pandas
+editdistance
+
+
