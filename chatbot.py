@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import importlib
-
+from prompt_toolkit import prompt
 
 class Chatbot:
     def __init__(self, local_vars, config_file = 'chatbot_config'):
@@ -87,7 +87,8 @@ class Chatbot:
             possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
             print(possible_next_states)
 
-            inp = input()
+            inp = input('> ')
+
             rating, pat, next_state = self.get_closest_command(possible_next_pattern_vectors, inp)
             required_contexts = self.get_field_from_intent("context_require", next_state)
 

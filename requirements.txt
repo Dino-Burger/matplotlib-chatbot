@@ -4,5 +4,5 @@ spacy
 numpy
 pandas
 editdistance
-
+prompt_toolkit
 
