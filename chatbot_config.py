@@ -144,8 +144,9 @@ def list_vars_parser(state_in, user_input, local_vars):
 # on calling plot
 plotting_code = { 
     'plot': """
-from matplotlib import pyplot as plt
 import matplotlib
+matplotlib.use('TkAgg') #remove again? 
+from matplotlib import pyplot as plt
 plt.clf()
 matplotlib.interactive(True)
 if xkcd:

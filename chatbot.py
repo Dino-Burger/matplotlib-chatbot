@@ -99,6 +99,27 @@ class Chatbot:
             print("Things to do:", ', '.join(possible_things_to_do))
 
             inp = input('> ')
+            if inp == "vv":
+
+                import speech_recognition as sr
+
+                # Record Audio
+                r = sr.Recognizer()
+                with sr.Microphone() as source:
+                    print("Say something!")
+                    audio = r.listen(source)
+
+                # Speech recognition using Google Speech Recognition
+                try:
+                    # for testing purposes, we're just using the default API key
+                    # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+                    # instead of `r.recognize_google(audio)`
+                    inp = r.recognize_google(audio)
+                except sr.UnknownValueError:
+                    print("Google Speech Recognition could not understand audio")
+                except sr.RequestError as e:
+                    print("Could not request results from Google Speech Recognition service; {0}".format(e))
+
 
             rating, pat, next_state = self.get_closest_command(possible_next_pattern_vectors, inp)
             required_contexts = self.get_field_from_intent("context_require", next_state)
