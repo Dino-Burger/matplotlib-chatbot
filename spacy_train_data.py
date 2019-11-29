@@ -7,6 +7,8 @@ sentences = [
     "show me all files in the current directory",
     "show me all files",
     "plot $variable",
+    "remove $variable",
+    "delete $variable",
     "Change the color of the markers to $color",
     "plot column $columnname from variable $variable",
     "show me all csv files",

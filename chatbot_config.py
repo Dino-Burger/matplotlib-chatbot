@@ -5,6 +5,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 from editdistance import eval as lev_dist
 
+import spacy
+spacy_model = spacy.load("test.spacy")
+
 def is_number(x):
     result = isinstance(x, float) or isinstance(x, int)
     return result
@@ -51,7 +54,7 @@ def plot_parser(state_in, user_input, local_vars):
         name = names[0]
         if name in get_plotting_candidates(local_vars):
             temp_var = local_vars[name]
-            state_in['variables_to_plot'].append(temp_var)
+            state_in['variables_to_plot'].append((name, temp_var))
             print("adding", name, "to the plot")
         else:
             print(name, "does not seem to be a printable variable")
@@ -71,7 +74,23 @@ def list_csv_parser(state_in, user_input, local_vars):
         state_in['csv_list'] = None
         print("something went wrong")
     return state_in
-    
+
+def remove_variable_parser(state_in, user_input, local_vars):
+    doc = spacy_model(user_input)
+    variable_candidates = [ ent.text for ent in doc.ents if ent.label_ == '$variable' ]
+    if len(variable_candidates) != 1:
+        print("Sorry cannot find this variable")
+    else:
+        del_var = variable_candidates[0]
+        if del_var in [ name for name, var in state_in['variables_to_plot']]:
+            state_in['variables_to_plot'] = [ (name,var) for name,var 
+                                                in state_in['variables_to_plot']
+                                                if name != del_var]
+        else:
+            print("Sorry this variable seems not to be plottet so far")
+    exec(plotting_code['plot'], local_vars, state_in)
+    return state_in
+
 def add_legend_upper_left_parser(state_in, user_input, local_vars):
     print("adding legend to the left")
     state_in['legend_location'] = "upper left"
@@ -93,9 +112,6 @@ def xkcd_off_parser(state_in, user_input, local_vars):
     state_in['xkcd'] = False
     exec(plotting_code['plot'], local_vars, state_in)
     return state_in
-
-import spacy
-spacy_model = spacy.load("test.spacy")
 
 def style_parser(state_in, user_input, local_vars):
     doc = spacy_model(user_input)
@@ -119,6 +135,12 @@ def list_styles_parser(state_in, user_input, local_vars):
     print("Available styles are:", ", ".join(plt.style.available))
     return state_in
 
+def list_vars_parser(state_in, user_input, local_vars):
+    candidates = get_plotting_candidates(local_vars)
+    print("Available variables are:", ", ".join(candidates))
+    return state_in
+
+
 # on calling plot
 plotting_code = { 
     'plot': """
@@ -131,7 +153,7 @@ if xkcd:
 else:
     cm = plt.style.context(plotting_style)
 with cm:
-    for plot_var in variables_to_plot:
+    for plot_var_name, plot_var in variables_to_plot:
         plt.plot(plot_var)
     if legend_location:
         plt.legend(['test'], loc=legend_location)
@@ -162,6 +184,15 @@ input_data_raw = [
     {   "intent": "list_csv",
         "response": "", 
         "code_command": list_csv_parser, },
+
+    # remove_variable
+    {   "start_states": ["*"],
+        "end_state": "remove_variable",
+        "patterns": ["remove", "delete",] },
+
+    {   "intent": "remove_variable",
+        "response": "", 
+        "code_command": remove_variable_parser, },
 
     # plot
     {   "start_states": ["*"],
@@ -262,6 +293,14 @@ input_data_raw = [
         "response": "", 
         "code_command": list_styles_parser,},    
 
+    # list_vars 
+    {   "start_states": ["*"],
+        "end_state": "list_vars",
+        "patterns": ["what data do I have", "show me all data", "show me all variables"] },
+
+    {   "intent": "list_vars",
+        "response": "", 
+        "code_command": list_vars_parser,},    
 
 
 ]
