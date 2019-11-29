@@ -153,10 +153,17 @@ if xkcd:
 else:
     cm = plt.style.context(plotting_style)
 with cm:
+    axes = []
+    axes_descr = []
     for plot_var_name, plot_var in variables_to_plot:
-        plt.plot(plot_var, label=plot_var_name)
+        ax=plt.plot(plot_var, label=plot_var_name)
+        axes.extend(ax)
+        if isinstance(plot_var, pd.DataFrame):
+            axes_descr.extend(list(plot_var.columns))
+        else:
+            axes_descr.append(plot_var_name)
     if legend_location:
-        plt.legend(loc=legend_location)
+        plt.legend(axes, axes_descr, loc=legend_location)
     plt.show()
 """,
     'scatter': """
