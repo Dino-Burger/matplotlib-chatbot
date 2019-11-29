@@ -47,6 +47,15 @@ class Chatbot:
                         and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(set(curr_contexts))]
         return next_states
 
+    def get_possible_actions(self, curr_state, curr_contexts):
+        "get only one pattern per edge to display to the user"
+        next_actions = [ edge["patterns"][0] 
+                        for edge in self.input_data_edges 
+                        if curr_state in edge["start_states"]
+                        and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(set(curr_contexts))]
+        return next_actions
+
+
     def get_closest_command(self, possible_next_pattern_vectors: list, inp:str):
         from sklearn.metrics.pairwise import cosine_similarity
         input_vector = self.word_vectorizer.transform([inp])
@@ -86,7 +95,8 @@ class Chatbot:
             # possible_next_pattern_vectors = get_possible_next_pattern_vectors_old(curr_state)
             possible_next_pattern_vectors = self.get_possible_next_pattern_vectors(curr_state, curr_contexts)
             possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
-            print(possible_next_states)
+            possible_things_to_do = self.get_possible_actions(curr_state, curr_contexts)
+            print("Things to do:", ', '.join(possible_things_to_do))
 
             inp = input('> ')
 
