@@ -73,6 +73,7 @@ class Chatbot:
             'legend_location': None,
             'plotting_command': 'plot', # vs 'scatter', 'hist'    
             'all_commands': ['from matplotlib import pyplot as plt'],
+            'xkcd': False,
         }
         continue_flag = True
 

@@ -84,6 +84,16 @@ def add_legend_upper_right_parser(state_in, user_input, local_vars):
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
 
+def xkcd_on_parser(state_in, user_input, local_vars):
+    state_in['xkcd'] = True
+    exec(plotting_code['plot'], local_vars, state_in)
+    return state_in
+
+def xkcd_off_parser(state_in, user_input, local_vars):
+    state_in['xkcd'] = False
+    exec(plotting_code['plot'], local_vars, state_in)
+    return state_in
+
 import spacy
 spacy_model = spacy.load("test.spacy")
 
@@ -105,6 +115,9 @@ def style_parser(state_in, user_input, local_vars):
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
 
+def list_styles_parser(state_in, user_input, local_vars):
+    print("Available styles are:", ", ".join(plt.style.available))
+    return state_in
 
 # on calling plot
 plotting_code = { 
@@ -113,7 +126,11 @@ from matplotlib import pyplot as plt
 import matplotlib
 plt.clf()
 matplotlib.interactive(True)
-with plt.style.context(plotting_style):
+if xkcd:
+    cm = plt.xkcd()
+else:
+    cm = plt.style.context(plotting_style)
+with cm:
     for plot_var in variables_to_plot:
         plt.plot(plot_var)
     if legend_location:
@@ -209,17 +226,25 @@ input_data_raw = [
         "context_require" : ["has_plotted"],
         "code_command": add_legend_upper_right_parser,},    
 
-    # add Styles -- this is really bad without parametrization!!
-    ## start with xkcd
+    # xkcd_on
     {   "start_states": ["*"],
         "end_state": "xkcd_on",
         "patterns": ["draw in xkcd style", "xkcd on"] },
 
     {   "intent": "xkcd_on",
         "response": "", 
-        "code_command": lambda x: (["plt.xkcd(scale=1, length=100, randomness=2)"],True),},    
+        "code_command": xkcd_on_parser,},    
 
-    # add Styles -- this is really bad without parametrization!!
+    # xkcd_off
+    {   "start_states": ["*"],
+        "end_state": "xkcd_off",
+        "patterns": ["turn off xkcd", "xkcd off", "no xkcd"] },
+
+    {   "intent": "xkcd_off",
+        "response": "", 
+        "code_command": xkcd_off_parser,},    
+
+    # style 
     {   "start_states": ["*"],
         "end_state": "style",
         "patterns": ["set style as", "enable style as", "change style to"] },
@@ -227,6 +252,16 @@ input_data_raw = [
     {   "intent": "style",
         "response": "", 
         "code_command": style_parser,},    
+
+    # list_styles 
+    {   "start_states": ["*"],
+        "end_state": "list_styles",
+        "patterns": ["list styles", "show me all styles"] },
+
+    {   "intent": "list_styles",
+        "response": "", 
+        "code_command": list_styles_parser,},    
+
 
 
 ]
