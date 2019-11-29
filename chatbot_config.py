@@ -154,9 +154,9 @@ else:
     cm = plt.style.context(plotting_style)
 with cm:
     for plot_var_name, plot_var in variables_to_plot:
-        plt.plot(plot_var)
+        plt.plot(plot_var, label=plot_var_name)
     if legend_location:
-        plt.legend(['test'], loc=legend_location)
+        plt.legend(loc=legend_location)
     plt.show()
 """,
     'scatter': """
