@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import importlib
 from prompt_toolkit import prompt
+from colorama import Fore, Style
 
 class Chatbot:
     def __init__(self, local_vars, config_file = 'chatbot_config'):
@@ -35,6 +36,9 @@ class Chatbot:
                 member["start_states"] = all_intents
         return input_data
 
+    @staticmethod
+    def print_subtle(text):
+        print(f"{Fore.GREEN}" + text + f"{Style.RESET_ALL}")
 
     def get_possible_next_pattern_vectors(self, curr_state, curr_contexts):
         # returns [(pat_vec, pat, end_state)]
@@ -88,15 +92,15 @@ class Chatbot:
 
 
         while(continue_flag):
-            print("-----------------------------------")
-            print("current State", curr_state)
-            print("current Contexts", curr_contexts)
+            self.print_subtle("-----------------------------------")
+            self.print_subtle("current State " + str(curr_state))
+            self.print_subtle("current Contexts " + str(curr_contexts))
 
             # possible_next_pattern_vectors = get_possible_next_pattern_vectors_old(curr_state)
             possible_next_pattern_vectors = self.get_possible_next_pattern_vectors(curr_state, curr_contexts)
             possible_next_states = list(set([ns for pat_vec, pat, ns in possible_next_pattern_vectors]))
             possible_things_to_do = self.get_possible_actions(curr_state, curr_contexts)
-            print("Things to do:", ', '.join(possible_things_to_do))
+            self.print_subtle("Things to do: " + ', '.join(possible_things_to_do))
 
             inp = input('> ')
             if inp == "":

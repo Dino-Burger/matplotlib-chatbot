@@ -7,3 +7,5 @@ editdistance
 prompt_toolkit
 sklearn
 SpeechRecognition
+colorama
+
