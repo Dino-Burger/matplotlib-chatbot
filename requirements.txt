@@ -6,3 +6,4 @@ pandas
 editdistance
 prompt_toolkit
 sklearn
+SpeechRecognition
