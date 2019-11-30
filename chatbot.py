@@ -37,8 +37,8 @@ class Chatbot:
         return input_data
 
     @staticmethod
-    def print_subtle(text):
-        print(f"{Fore.GREEN}" + text + f"{Style.RESET_ALL}")
+    def print_subtle(*text):
+        print(Fore.GREEN, *text , Style.RESET_ALL)
 
     def get_possible_next_pattern_vectors(self, curr_state, curr_contexts):
         # returns [(pat_vec, pat, end_state)]
@@ -93,8 +93,8 @@ class Chatbot:
 
         while(continue_flag):
             self.print_subtle("-----------------------------------")
-            self.print_subtle("current State " + str(curr_state))
-            self.print_subtle("current Contexts " + str(curr_contexts))
+            self.print_subtle("current State", curr_state)
+            self.print_subtle("current Contexts", curr_contexts)
 
             # possible_next_pattern_vectors = get_possible_next_pattern_vectors_old(curr_state)
             possible_next_pattern_vectors = self.get_possible_next_pattern_vectors(curr_state, curr_contexts)
@@ -104,7 +104,7 @@ class Chatbot:
 
             inp = input('> ')
             if inp == "":
-
+                # https://pythonspot.com/speech-recognition-using-google-speech-api/
                 import speech_recognition as sr
 
                 # Record Audio
