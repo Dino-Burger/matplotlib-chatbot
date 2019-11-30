@@ -5,7 +5,12 @@ from prompt_toolkit import prompt
 from colorama import Fore, Style
 
 class Chatbot:
-    def __init__(self, local_vars, config_file = 'chatbot_config'):
+    def __init__(self, local_vars, config_file = 'chatbot_config', mat = None):
+        import matplotlib
+        
+        if mat:
+            matplotlib.use(mat)
+        
         self.local_vars = local_vars
 
         self.conf = importlib.import_module(config_file)

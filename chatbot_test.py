@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from chatbot import Chatbot
 
-cb = Chatbot(locals())
+cb = Chatbot(locals(), mat= 'TkAgg')
+# cb = Chatbot(locals()) # in most environments
 
 # some variables
 x= [1,2,4,5,6]
