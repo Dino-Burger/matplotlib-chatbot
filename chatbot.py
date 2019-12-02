@@ -110,21 +110,23 @@ class Chatbot:
             inp = input('> ')
             if inp == "":
                 # https://pythonspot.com/speech-recognition-using-google-speech-api/
-                import speech_recognition as sr
+                try:
+                    import speech_recognition as sr
 
-                # Record Audio
-                r = sr.Recognizer()
-                with sr.Microphone() as source:
-                    print("Say something!")
-                    audio = r.listen(source)
+                    # Record Audio
+                    r = sr.Recognizer()
+                    with sr.Microphone() as source:
+                        print("Say something!")
+                        audio = r.listen(source)
 
                 # Speech recognition using Google Speech Recognition
-                try:
                     # for testing purposes, we're just using the default API key
                     # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
                     # instead of `r.recognize_google(audio)`
                     inp = r.recognize_google(audio)
                     print(inp)
+                except OSError:
+                    print("Most likely No Default Input Device Available")
                 except sr.UnknownValueError:
                     print("Google Speech Recognition could not understand audio")
                 except sr.RequestError as e:

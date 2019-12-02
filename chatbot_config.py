@@ -171,9 +171,6 @@ with cm:
 """,
     'hist': """
 """,
-    'list_files':"""
-[ file for file in os.listdir("./testdata/") if file.endswith(".csv") ]
-""",
 
 }
 
