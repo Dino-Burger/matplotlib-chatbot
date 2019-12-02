@@ -208,24 +208,6 @@ input_data_raw = [
         "context_set": ["has_plotted"],
         "code_command": plot_parser, },
    
-    # hist
-    {   "start_states": ["*"],
-        "end_state": "hist",
-        "patterns": ["make a histogram of x"] },
-
-    {   "intent": "hist",
-        "response": "", 
-        "context_set": ["has_plotted"],},    
-
-    # hist_with_bins
-    {   "start_states": ["*"],
-        "end_state": "hist_with_bins",
-        "patterns": ["make a histogram of x with y bins"] },
-
-    {   "intent": "hist_with_bins",
-        "response": "", 
-        "context_set": ["has_plotted"],}, 
-
     # add_legend
     {   "start_states": ["*"],
         "end_state": "add_legend",
