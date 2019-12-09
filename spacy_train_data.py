@@ -16,7 +16,8 @@ sentences = [
     "add a legend",
     "add a legend to the $position",
     "set style as $style", 
-    "enable style as $style", 
+    "set style $style", 
+    "enable style $style", 
     "change style to $style"
 ]
 
@@ -27,7 +28,7 @@ variable_train_values = {
     '$ordinal': ['first', 'second', 'third', 'fourth', 'fifth', ],
         # does spacy provide something for numbers already?
     '$position': [ 'upper left', 'upper right', 'bottom left', 'bottom right', ],
-    '$style': ['dark_background', 'grayscale', 'seaborn-ticks'],
+    '$style': ['dark_background', 'grayscale', 'seaborn-ticks', 'seaborn dark palette'],
 }
 
 

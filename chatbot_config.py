@@ -16,7 +16,6 @@ all_variables = {
     'plotting_style': 'seaborn',
     'legend_location': None,
     'plotting_command': 'plot', # vs 'scatter', 'hist'    
-    'all_commands': ['from matplotlib import pyplot as plt'],
     'xkcd': False,
 }
 # -------------------------
@@ -131,15 +130,15 @@ def style_parser(state_in, user_input, local_vars):
     doc = spacy_model(user_input)
     style_candidates = [ ent.text for ent in doc.ents if ent.label_ == '$style' ]
     if len(style_candidates) != 1:
-        print("sorry, could not parse this")
+        print("sorry, could not parse this", style_candidates)
     else:
         style_candidate = style_candidates[0]
         styles_available = plt.style.available
         styles_available_with_distance = [ (sa,lev_dist(sa,style_candidate)) 
                                             for sa in styles_available ]
         sa, sa_dist = min(styles_available_with_distance, key=lambda x: x[1])
-        if sa_dist > 3:
-            print("sorry, I could not find this style")
+        if sa_dist > 5:
+            print("sorry, I could not find this style", style_candidate)
         else:
             state_in['plotting_style'] = sa
     exec(plotting_code['plot'], globals(), state_in)
@@ -260,7 +259,7 @@ input_data_raw = [
     # xkcd_on
     {   "start_states": ["*"],
         "end_state": "xkcd_on",
-        "patterns": ["draw in xkcd style", "xkcd on"] },
+        "patterns": ["draw in xkcd style", "xkcd on", "use xkcd"] },
 
     {   "intent": "xkcd_on",
         "response": "", 
