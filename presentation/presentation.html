@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Chatbot for Matplotlib
+
+Dino Burger
+
+---
+
+# Agenda
+
+1. Introduction
+2. Goals
+3. Demo
+4. Outlook
+
+---
+
+# Introduction
+- About me
+- How the project came about
+
+---
+
+# Goals
+- Learn how chatbots work
+- Separate code from config
+- Have some fun!
+
+---
+
+# Demo
+![:img Terminal, 100%](screenshot_terminal.png)
+
+---
+
+# Challenges
+- Build a clean model with a directed graph
+- Wire everything together
+
+---
+
+# Outlook
+- Other libraries
+- Experiments with a growing graph: How well will it scale?
+- Make the language less 'me' specific
+
+---
+
+# Questions
+
+---
+class: center, middle 
+# Thank you!
+
+    </textarea>
+    <!-- <script src="https://remarkjs.com/downloads/remark-latest.min.js"> -->
+    <script src="remark-latest.min.js">
+    </script>
+    <script>
+
+      remark.macros.img = function (altText, width) {
+        var url = this;
+        return '<img alt="' + altText + '" src="' + url + '" style="width: ' + width + '" />';
+      };
+
+      remark.macros.imgh = function (altText, height) {
+        var url = this;
+        return '<img alt="' + altText + '" src="' + url + '" style="height: ' + height + '" />';
+      };
+
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
