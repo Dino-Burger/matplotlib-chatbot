@@ -79,7 +79,7 @@ def plot_parser(state_in, user_input, local_vars):
 def list_csv_parser(state_in, user_input, local_vars):
     try:
         state_in['csv_list'] = [ file for file in os.listdir("./testdata/") 
-                                                if file.endswith(".csv")]
+                                                if file.endswith(".csv")][:5]
         print("we found the following files for you:")
         for ind, csv in enumerate(state_in['csv_list']):
             print(ind, ":", csv)
@@ -88,9 +88,39 @@ def list_csv_parser(state_in, user_input, local_vars):
         print("something went wrong")
     return state_in
 
+def load_csv_parser(state_in, user_input, local_vars):
+    if state_in['csv_list'] is None:
+        print("please list the files first!")
+        return state_in
+    doc = spacy_model(user_input)
+    variable_candidates = [ ent.text for ent in doc.ents 
+                            if ent.label_ == '$ordinal' ]
+    if len(variable_candidates) != 1:
+        print("Sorry cannot find this file number", variable_candidates)
+    else:
+        file_number = variable_candidates[0]
+        possible_numbers = [ ('first',0), ('second',1), ('third',2),
+                                ('fourth',3), ('fifth',4),
+                                ('1.',0), ('2.',1), ('3.',2), ('4.',3), ('5.',4),]
+        possible_numbers_with_distance = [ (rn,lev_dist(sn,file_number)) 
+                                            for sn, rn in possible_numbers ]
+        rn, rn_dist = min(possible_numbers_with_distance, key=lambda x: x[1])
+        if rn_dist > 3:
+            print("sorry, I could not find this number", file_number)
+        else:
+            file_to_open = state_in['csv_list'][rn]
+            print(file_to_open)
+            my_plot_var = pd.read_csv("testdata/" + file_to_open) 
+            state_in['variables_to_plot'].append(('loaded_var', my_plot_var))
+    exec(plotting_code['plot'], local_vars, state_in)
+    return state_in            
+    
+
+
 def remove_variable_parser(state_in, user_input, local_vars):
     doc = spacy_model(user_input)
-    variable_candidates = [ ent.text for ent in doc.ents if ent.label_ == '$variable' ]
+    variable_candidates = [ ent.text for ent in doc.ents 
+                            if ent.label_ == '$variable' ]
     if len(variable_candidates) != 1:
         print("Sorry cannot find this variable")
     else:
@@ -200,7 +230,18 @@ input_data_raw = [
 
     {   "intent": "list_csv",
         "response": "", 
+        "context_set": ["csv_listed"],
         "code_command": list_csv_parser, },
+
+    # load_csv
+    {   "start_states": ["*"],
+        "end_state": "load_csv",
+        "patterns": ["load", "load the file"] },
+
+    {   "intent": "load_csv",
+        "response": "", 
+        "code_command": load_csv_parser, 
+        "context_require" : ["csv_listed"],},
 
     # remove_variable
     {   "start_states": ["*"],
