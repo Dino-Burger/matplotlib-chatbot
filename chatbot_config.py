@@ -8,6 +8,20 @@ from editdistance import eval as lev_dist
 import spacy
 spacy_model = spacy.load("test.spacy")
 
+# -------------------------
+# these are all variables that are used while running the bot, very important!
+all_variables = {
+    'csv_list': None,
+    'variables_to_plot': [ ],
+    'plotting_style': 'seaborn',
+    'legend_location': None,
+    'plotting_command': 'plot', # vs 'scatter', 'hist'    
+    'all_commands': ['from matplotlib import pyplot as plt'],
+    'xkcd': False,
+}
+# -------------------------
+
+
 def is_number(x):
     result = isinstance(x, float) or isinstance(x, int)
     return result

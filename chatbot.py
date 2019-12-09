@@ -15,6 +15,8 @@ class Chatbot:
 
         self.conf = importlib.import_module(config_file)
 
+        self.all_variables = self.conf.all_variables
+
         self.input_data = self.process_input_data(self.conf.input_data_raw)
         self.input_data_edges = [ member for member in self.input_data if "start_states" in member]
         self.input_data_nodes = [ member for member in self.input_data if "intent" in member]
@@ -90,15 +92,6 @@ class Chatbot:
         curr_state = "entry"
         curr_contexts = []
 
-        all_variables = {
-            'csv_list': None,
-            'variables_to_plot': [ ],
-            'plotting_style': 'seaborn',
-            'legend_location': None,
-            'plotting_command': 'plot', # vs 'scatter', 'hist'    
-            'all_commands': ['from matplotlib import pyplot as plt'],
-            'xkcd': False,
-        }
         continue_flag = True
 
 
@@ -157,7 +150,7 @@ class Chatbot:
             parser = self.get_field_from_intent("code_command",
                                             next_state, 
                                             default=lambda all_variables, inp, local_vars: all_variables)
-            all_variables = parser(all_variables, inp, self.local_vars)
+            self.all_variables = parser(self.all_variables, inp, self.local_vars)
             
             curr_state = next_state
             curr_contexts.extend(self.get_field_from_intent("context_set", next_state))
