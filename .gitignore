@@ -2,6 +2,7 @@
 .vscode
 testdata/
 test.spacy/
+not_understood.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

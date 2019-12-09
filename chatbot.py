@@ -32,6 +32,12 @@ class Chatbot:
             patterns = edge["patterns"]
             pattern_vectors = self.word_vectorizer.transform(patterns)
             edge["pattern_vectors"] = pattern_vectors
+    
+        # open file for texts not understood
+        self.file_not_understood = open("not_understood.txt", "a")
+
+    def __del__(self):
+        self.file_not_understood.close()
 
     def process_input_data(self, input_data):
         # replace ["*"] in start_states by actual list of all states
@@ -141,6 +147,7 @@ class Chatbot:
                 continue
             if rating < 0.6:
                 print("sry, didn't understand you!")
+                self.file_not_understood.write(inp + "\n")
                 continue
             if not set(required_contexts).issubset(set(curr_contexts)):
                 lacking_context = list(set(required_contexts)-set(curr_contexts))
