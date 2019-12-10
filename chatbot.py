@@ -61,7 +61,7 @@ class Chatbot:
                         for edge in self.input_data_edges 
                         for i_vec in range(edge["pattern_vectors"].shape[0])
                         if curr_state in edge["start_states"]
-                        and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(set(curr_contexts))]
+                        and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(curr_contexts)]
         return next_states
 
     def get_possible_actions(self, curr_state, curr_contexts):
@@ -69,7 +69,7 @@ class Chatbot:
         next_actions = [ edge["patterns"][0] 
                         for edge in self.input_data_edges 
                         if curr_state in edge["start_states"]
-                        and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(set(curr_contexts))]
+                        and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(curr_contexts)]
         return next_actions
 
 
@@ -90,7 +90,7 @@ class Chatbot:
     def run(self):
         from matplotlib import pyplot as plt
         curr_state = "entry"
-        curr_contexts = []
+        curr_contexts = set()
 
         continue_flag = True
 
@@ -142,8 +142,8 @@ class Chatbot:
                 print("sry, didn't understand you!")
                 self.file_not_understood.write(inp + "\n")
                 continue
-            if not set(required_contexts).issubset(set(curr_contexts)):
-                lacking_context = list(set(required_contexts)-set(curr_contexts))
+            if not set(required_contexts).issubset(curr_contexts):
+                lacking_context = set(required_contexts)-curr_contexts
                 print("sry, you lack context", lacking_context, "to do this")
                 continue
 
@@ -153,7 +153,7 @@ class Chatbot:
             self.all_variables = parser(self.all_variables, inp, self.local_vars)
             
             curr_state = next_state
-            curr_contexts.extend(self.get_field_from_intent("context_set", next_state))
+            curr_contexts |= set(self.get_field_from_intent("context_set", next_state))
             print(self.get_field_from_intent("response", curr_state, ""))
         print("bye")
 
