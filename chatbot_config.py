@@ -82,7 +82,7 @@ def list_csv_parser(state_in, user_input, local_vars):
                                                 if file.endswith(".csv")][:5]
         print("we found the following files for you:")
         for ind, csv in enumerate(state_in['csv_list']):
-            print(ind, ":", csv)
+            print(ind+1, ":", csv) # we start counting at 1.
     except:
         state_in['csv_list'] = None
         print("something went wrong")
