@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from chatbot import Chatbot
 
-cb = Chatbot(locals(), mat= 'TkAgg')
+cb = Chatbot(locals(), backend= 'TkAgg')
 # cb = Chatbot(locals()) # in most environments
 
 # some variables

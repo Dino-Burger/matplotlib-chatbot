@@ -1,16 +1,21 @@
-import pandas as pd
-import numpy as np
 import importlib
-from prompt_toolkit import prompt
+
 from colorama import Fore, Style
+import matplotlib
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
+from prompt_toolkit import prompt
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 class Chatbot:
-    def __init__(self, local_vars, config_file = 'chatbot_config', mat = None):
-        import matplotlib
-        
-        if mat:
-            matplotlib.use(mat)
-        
+    def __init__(self, local_vars, config_file = 'chatbot_config', backend = None):
+
+        if backend:
+            matplotlib.use(backend)
+
         self.local_vars = local_vars
 
         self.conf = importlib.import_module(config_file)
@@ -21,10 +26,7 @@ class Chatbot:
         self.input_data_edges = [ member for member in self.input_data if "start_states" in member]
         self.input_data_nodes = [ member for member in self.input_data if "intent" in member]
 
-
         # cosine tfidf model
-        from sklearn.feature_extraction.text import TfidfVectorizer
-
         self.word_vectorizer = TfidfVectorizer()
         self.all_patterns = [pat for edge in self.input_data_edges for pat in edge["patterns"]]
         self.word_vectorizer.fit(self.all_patterns)
@@ -34,7 +36,7 @@ class Chatbot:
             patterns = edge["patterns"]
             pattern_vectors = self.word_vectorizer.transform(patterns)
             edge["pattern_vectors"] = pattern_vectors
-    
+
         # open file for texts not understood
         self.file_not_understood = open("not_understood.txt", "a")
 
@@ -55,10 +57,10 @@ class Chatbot:
 
     def get_possible_next_pattern_vectors(self, curr_state, curr_contexts):
         # returns [(pat_vec, pat, end_state)]
-        next_states = [ (edge["pattern_vectors"][i_vec], 
+        next_states = [ (edge["pattern_vectors"][i_vec],
                         edge["patterns"][i_vec],
-                        edge["end_state"]) 
-                        for edge in self.input_data_edges 
+                        edge["end_state"])
+                        for edge in self.input_data_edges
                         for i_vec in range(edge["pattern_vectors"].shape[0])
                         if curr_state in edge["start_states"]
                         and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(curr_contexts)]
@@ -66,34 +68,30 @@ class Chatbot:
 
     def get_possible_actions(self, curr_state, curr_contexts):
         "get only one pattern per edge to display to the user"
-        next_actions = [ edge["patterns"][0] 
-                        for edge in self.input_data_edges 
+        next_actions = [ edge["patterns"][0]
+                        for edge in self.input_data_edges
                         if curr_state in edge["start_states"]
                         and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(curr_contexts)]
         return next_actions
 
-
     def get_closest_command(self, possible_next_pattern_vectors: list, inp:str):
-        from sklearn.metrics.pairwise import cosine_similarity
         input_vector = self.word_vectorizer.transform([inp])
         all_distances = [(cosine_similarity(input_vector, pat_vec)[0][0], pat, end_state)
                             for pat_vec, pat, end_state in possible_next_pattern_vectors ]
-        max_command = max(all_distances, key = lambda l: l[0])
+        max_command = max(all_distances, key=lambda l: l[0])
         return max_command
 
     def get_field_from_intent(self, field_name, intent, default=[]):
-        response = [ node.get(field_name, default) for node in self.input_data_nodes
+        response = [node.get(field_name, default) for node in self.input_data_nodes
                         if node['intent'] == intent]
         assert(len(response)==1)
         return response[0]
 
     def run(self):
-        from matplotlib import pyplot as plt
         curr_state = "entry"
         curr_contexts = set()
 
         continue_flag = True
-
 
         while(continue_flag):
             self.print_subtle("-----------------------------------")
@@ -131,7 +129,6 @@ class Chatbot:
                 except sr.RequestError as e:
                     print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
-
             rating, pat, next_state = self.get_closest_command(possible_next_pattern_vectors, inp)
             required_contexts = self.get_field_from_intent("context_require", next_state)
 
@@ -139,19 +136,19 @@ class Chatbot:
                 continue_flag = False
                 continue
             if rating < 0.6:
-                print("sry, didn't understand you!")
+                print("Sorry, didn't understand you!")
                 self.file_not_understood.write(inp + "\n")
                 continue
             if not set(required_contexts).issubset(curr_contexts):
                 lacking_context = set(required_contexts)-curr_contexts
-                print("sry, you lack context", lacking_context, "to do this")
+                print("Sorry, you lack context", lacking_context, "to do this")
                 continue
 
             parser = self.get_field_from_intent("code_command",
-                                            next_state, 
+                                            next_state,
                                             default=lambda all_variables, inp, local_vars: all_variables)
             self.all_variables = parser(self.all_variables, inp, self.local_vars)
-            
+
             curr_state = next_state
             curr_contexts |= set(self.get_field_from_intent("context_set", next_state))
             print(self.get_field_from_intent("response", curr_state, ""))
@@ -163,7 +160,7 @@ class Chatbot:
 
 def get_possible_next_states(curr_state):
     edges = [ member for member in input_data if "start_states" in member]
-    next_states = [ member["end_state"] for member in edges 
+    next_states = [ member["end_state"] for member in edges
                     if curr_state in member["start_states"]]
     return next_states
 
@@ -177,10 +174,10 @@ def get_possible_next_patterns(curr_state):
 
 def get_possible_next_pattern_vectors_old(curr_state):
     # returns [(pat_vec, pat, end_state)]
-    next_states = [ (member["pattern_vectors"][i_vec], 
+    next_states = [ (member["pattern_vectors"][i_vec],
                     member["patterns"][i_vec],
-                    member["end_state"]) 
-                    for member in input_data_edges 
+                    member["end_state"])
+                    for member in input_data_edges
                     for i_vec in range(member["pattern_vectors"].shape[0])
                     if curr_state in member["start_states"]]
     return next_states

@@ -90,7 +90,6 @@ def train_spacy(data,iterations):
     if 'ner' not in nlp.pipe_names:
         ner = nlp.create_pipe('ner')
         nlp.add_pipe(ner, last=True)
-       
 
     # add labels
     for _, annotations in TRAIN_DATA:
@@ -116,18 +115,18 @@ def train_spacy(data,iterations):
     return nlp
 
 
-train_data_raw = fill_examples_variables(sentences, variable_train_values)
-train_data_spacy = [ (sent, {'entities': var }) for sent, var in train_data_raw]
+def save_spacy_file():
+    train_data_raw = fill_examples_variables(sentences, variable_train_values)
+    train_data_spacy = [ (sent, {'entities': var }) for sent, var in train_data_raw]
 
-mynlp = train_spacy(train_data_spacy, 20)
+    mynlp = train_spacy(train_data_spacy, 20)
+    #  relies on working directory to save in correct place
+    mynlp.to_disk("test.spacy")
 
-mynlp.to_disk("test.spacy")
+    test_text = "change style to ggplot"
+    doc = mynlp(test_text)
+    for ent in doc.ents:
+        print(ent.text, ent.start_char, ent.end_char, ent.label_)
 
-
-
-test_text = "change style to ggplot"
-doc = mynlp(test_text)
-for ent in doc.ents:
-    print(ent.text, ent.start_char, ent.end_char, ent.label_)
-
-
+if __name__ == '__main__':
+    save_spacy_file()
