@@ -27,20 +27,15 @@ Dino Burger
 
 ---
 
-# Agenda
-
-1. Introduction
-2. Goals
-3. Demo
-4. Outlook
-
----
-
 # Introduction
 - About me
 - How the project came about
 
----
+# Agenda
+- Goals
+- Demo
+- Technology
+- Outlook
 
 # Goals
 - Learn how chatbots work
@@ -54,9 +49,25 @@ Dino Burger
 
 ---
 
-# Challenges
-- Build a clean model with a directed graph
-- Wire everything together
+# Technology – the graph
+```python
+# load_csv
+{   "start_states": ["*"],
+    "end_state": "load_csv",
+    "patterns": ["load", "load the file"] },
+
+{   "intent": "load_csv",
+    "response": "", 
+    "code_command": load_csv_parser, 
+    "context_set": ["has_plotted"],
+    "context_require" : ["csv_listed"],},
+```
+![:img State diagram, 100%](state_diagram.jpg)
+
+---
+
+# Technology – the journey of an input
+![:img User input flowchart, 60%](user_input_flowchart.jpg)
 
 ---
 
