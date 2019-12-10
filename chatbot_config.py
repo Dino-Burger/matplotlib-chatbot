@@ -241,6 +241,7 @@ input_data_raw = [
     {   "intent": "load_csv",
         "response": "", 
         "code_command": load_csv_parser, 
+        "context_set": ["has_plotted"],
         "context_require" : ["csv_listed"],},
 
     # remove_variable
