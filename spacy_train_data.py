@@ -123,7 +123,7 @@ def save_spacy_file():
 
     mynlp = train_spacy(train_data_spacy, 20)
     #  relies on working directory to save in correct place
-    mynlp.to_disk("test.spacy")
+    mynlp.to_disk("spacy-model")
 
     test_text = "change style to ggplot"
     doc = mynlp(test_text)

@@ -6,6 +6,7 @@ pandas
 editdistance
 prompt_toolkit
 sklearn
+PyAudio
 SpeechRecognition
 colorama
 

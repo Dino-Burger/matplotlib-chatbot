@@ -6,7 +6,14 @@ import matplotlib.pyplot as plt
 from editdistance import eval as lev_dist
 
 import spacy
-spacy_model = spacy.load("test.spacy")
+
+try:
+    spacy_model = spacy.load("spacy-model")
+except:
+    from spacy_train_data import save_spacy_file
+    save_spacy_file()
+    spacy_model = spacy.load("spacy-model")
+
 
 # -------------------------
 # these are all variables that are used while running the bot, very important!
