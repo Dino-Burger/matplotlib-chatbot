@@ -118,6 +118,8 @@ def train_spacy(data,iterations):
 def save_spacy_file():
     train_data_raw = fill_examples_variables(sentences, variable_train_values)
     train_data_spacy = [ (sent, {'entities': var }) for sent, var in train_data_raw]
+    # data format of train_data_spacy is:
+    # [('load the first', {'entities': [(9, 14, '$ordinal')]}), ... ]
 
     mynlp = train_spacy(train_data_spacy, 20)
     #  relies on working directory to save in correct place
