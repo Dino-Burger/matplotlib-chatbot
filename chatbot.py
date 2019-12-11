@@ -11,10 +11,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 class Chatbot:
-    def __init__(self, local_vars, config_file = 'chatbot_config', backend = None):
-
-        if backend:
-            matplotlib.use(backend)
+    def __init__(self, local_vars, config_file = 'chatbot_config'):
 
         self.local_vars = local_vars
 
