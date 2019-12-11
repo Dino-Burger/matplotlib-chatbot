@@ -78,7 +78,7 @@ def plot_parser(state_in, user_input, local_vars):
 
 def list_csv_parser(state_in, user_input, local_vars):
     try:
-        state_in['csv_list'] = [ file for file in os.listdir("./testdata/") 
+        state_in['csv_list'] = [ file for file in os.listdir("./data/") 
                                                 if file.endswith(".csv")][:5]
         print("we found the following files for you:")
         for ind, csv in enumerate(state_in['csv_list']):
@@ -110,12 +110,15 @@ def load_csv_parser(state_in, user_input, local_vars):
         else:
             file_to_open = state_in['csv_list'][rn]
             print(file_to_open)
-            my_plot_var = pd.read_csv("testdata/" + file_to_open) 
+            my_plot_var = pd.read_csv("data/" + file_to_open) 
             state_in['variables_to_plot'].append(('loaded_var', my_plot_var))
     exec(plotting_code['plot'], local_vars, state_in)
     return state_in            
     
-
+def list_variables_parser(state_in, user_input, local_vars):
+    variable_names = [name for name,var in state_in['variables_to_plot']]
+    print("You're currently plotting", ', '.join(variable_names))
+    return state_in    
 
 def remove_variable_parser(state_in, user_input, local_vars):
     doc = spacy_model(user_input)
@@ -217,7 +220,7 @@ with cm:
 
 }
 
-input_data_raw = [
+graph_data_raw = [
     # entry
     # No incoming connections for "entry"
     {   "intent": "entry",
@@ -243,6 +246,15 @@ input_data_raw = [
         "code_command": load_csv_parser, 
         "context_set": ["has_plotted"],
         "context_require" : ["csv_listed"],},
+
+    # list_variables
+    {   "start_states": ["*"],
+        "end_state": "list_variables",
+        "patterns": ["list variables",] },
+
+    {   "intent": "list_variables",
+        "response": "", 
+        "code_command": list_variables_parser, },
 
     # remove_variable
     {   "start_states": ["*"],

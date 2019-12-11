@@ -1,6 +1,6 @@
 .ipynb_checkpoints/
 .vscode
-testdata/
+data/
 test.spacy/
 not_understood.txt
 

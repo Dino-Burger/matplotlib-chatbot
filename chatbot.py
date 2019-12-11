@@ -22,17 +22,17 @@ class Chatbot:
 
         self.all_variables = self.conf.all_variables
 
-        self.input_data = self.process_input_data(self.conf.input_data_raw)
-        self.input_data_edges = [ member for member in self.input_data if "start_states" in member]
-        self.input_data_nodes = [ member for member in self.input_data if "intent" in member]
+        self.graph_data = self.process_graph_data(self.conf.graph_data_raw)
+        self.graph_data_edges = [ member for member in self.graph_data if "start_states" in member]
+        self.graph_data_nodes = [ member for member in self.graph_data if "intent" in member]
 
         # cosine tfidf model
         self.word_vectorizer = TfidfVectorizer()
-        self.all_patterns = [pat for edge in self.input_data_edges for pat in edge["patterns"]]
+        self.all_patterns = [pat for edge in self.graph_data_edges for pat in edge["patterns"]]
         self.word_vectorizer.fit(self.all_patterns)
 
-        # add tfidf vectors to input_data_edges
-        for edge in self.input_data_edges:
+        # add tfidf vectors to graph_data_edges
+        for edge in self.graph_data_edges:
             patterns = edge["patterns"]
             pattern_vectors = self.word_vectorizer.transform(patterns)
             edge["pattern_vectors"] = pattern_vectors
@@ -43,13 +43,13 @@ class Chatbot:
     def __del__(self):
         self.file_not_understood.close()
 
-    def process_input_data(self, input_data):
+    def process_graph_data(self, graph_data):
         # replace ["*"] in start_states by actual list of all states
-        all_intents = [member["intent"] for member in input_data if "intent" in member]
-        for member in input_data:
+        all_intents = [member["intent"] for member in graph_data if "intent" in member]
+        for member in graph_data:
             if "start_states" in member and member["start_states"] == ["*"]:
                 member["start_states"] = all_intents
-        return input_data
+        return graph_data
 
     @staticmethod
     def print_subtle(*text, **kwargs):
@@ -60,7 +60,7 @@ class Chatbot:
         next_states = [ (edge["pattern_vectors"][i_vec],
                         edge["patterns"][i_vec],
                         edge["end_state"])
-                        for edge in self.input_data_edges
+                        for edge in self.graph_data_edges
                         for i_vec in range(edge["pattern_vectors"].shape[0])
                         if curr_state in edge["start_states"]
                         and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(curr_contexts)]
@@ -69,7 +69,7 @@ class Chatbot:
     def get_possible_actions(self, curr_state, curr_contexts):
         "get only one pattern per edge to display to the user"
         next_actions = [ edge["patterns"][0]
-                        for edge in self.input_data_edges
+                        for edge in self.graph_data_edges
                         if curr_state in edge["start_states"]
                         and set(self.get_field_from_intent("context_require", edge["end_state"])).issubset(curr_contexts)]
         return next_actions
@@ -82,7 +82,7 @@ class Chatbot:
         return max_command
 
     def get_field_from_intent(self, field_name, intent, default=[]):
-        response = [node.get(field_name, default) for node in self.input_data_nodes
+        response = [node.get(field_name, default) for node in self.graph_data_nodes
                         if node['intent'] == intent]
         assert(len(response)==1)
         return response[0]
@@ -132,7 +132,7 @@ class Chatbot:
             rating, pat, next_state = self.get_closest_command(possible_next_pattern_vectors, inp)
             required_contexts = self.get_field_from_intent("context_require", next_state)
 
-            if inp == 'end':
+            if inp == 'end' or inp == 'exit':
                 continue_flag = False
                 continue
             if rating < 0.6:
@@ -159,14 +159,14 @@ class Chatbot:
 # Graveyard
 
 def get_possible_next_states(curr_state):
-    edges = [ member for member in input_data if "start_states" in member]
+    edges = [ member for member in graph_data if "start_states" in member]
     next_states = [ member["end_state"] for member in edges
                     if curr_state in member["start_states"]]
     return next_states
 
 
 def get_possible_next_patterns(curr_state):
-    edges = [ member for member in input_data if "start_states" in member]
+    edges = [ member for member in graph_data if "start_states" in member]
     next_states = [ (patt, member["end_state"]) for member in edges for patt in member["patterns"]
                     if curr_state in member["start_states"]]
     return next_states
@@ -177,7 +177,7 @@ def get_possible_next_pattern_vectors_old(curr_state):
     next_states = [ (member["pattern_vectors"][i_vec],
                     member["patterns"][i_vec],
                     member["end_state"])
-                    for member in input_data_edges
+                    for member in graph_data_edges
                     for i_vec in range(member["pattern_vectors"].shape[0])
                     if curr_state in member["start_states"]]
     return next_states
