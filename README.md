@@ -1,5 +1,5 @@
 # Matplotlib-chatbot
-This is an attempt to build a simple chatbot to plot via matplotlib.
+This is a simple chatbot to plot via matplotlib.
 
 ## Installation
 
