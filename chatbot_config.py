@@ -10,7 +10,7 @@ import spacy
 try:
     spacy_model = spacy.load("spacy-model")
 except:
-    from spacy_train_data import spacy_model_create
+    from spacy_model_create import save_spacy_file
     save_spacy_file()
     spacy_model = spacy.load("spacy-model")
 
