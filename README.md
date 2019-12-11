@@ -1,13 +1,20 @@
 # Matplotlib-chatbot
 This is a simple chatbot to plot via matplotlib.
 
-## Installation
-
+## Installation via git
 ```bash
 git clone https://github.com/Dino-Burger/matplotlib-chatbot
-
 cd matplotlib-chatbot
+pip install -r requirements.txt
+```
 
+## Installation via .zip file
+- Go to [https://github.com/Dino-Burger/matplotlib-chatbot/releases]
+- Download the latest .zip file
+- Unpack it
+- Execute 
+```bash
+cd matplotlib-chatbot-X.X.X
 pip install -r requirements.txt
 ```
 
@@ -35,4 +42,4 @@ python chatbot_run.py
 ```
 
 ## Load data in chatbot
-You can load a pandas dataframe from within the chatbot. For this to work, you need csv files in a subdirectory called `data`.
+You can load a pandas dataframe from within the chatbot. For this to work, you need csv files in a subdirectory called `data`. Note that this is a very experimental feature and the chatbot will crash if there are any non-numeric columns in a file (like strings or dates).
