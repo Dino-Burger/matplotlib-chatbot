@@ -2,6 +2,7 @@
 .vscode
 data/
 spacy-model/
+deepspeech-0.6.0-models/
 not_understood.txt
 
 # Byte-compiled / optimized / DLL files
