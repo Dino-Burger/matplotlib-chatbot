@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from chatbot import Chatbot
 
+import matplotlib
+matplotlib.use('TkAgg')
+
 cb = Chatbot(locals())
 
 # some variables

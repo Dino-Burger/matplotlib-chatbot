@@ -33,3 +33,6 @@ cb.run()
 ```bash
 python chatbot_run.py
 ```
+
+## Load data in chatbot
+You can load a pandas dataframe from within the chatbot. For this to work, you need csv files in a subdirectory called `data`.
