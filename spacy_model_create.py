@@ -101,7 +101,7 @@ def train_spacy(data,iterations):
     with nlp.disable_pipes(*other_pipes):  # only train NER
         optimizer = nlp.begin_training()
         for itn in range(iterations):
-            print("Statring iteration " + str(itn))
+            print("Starting iteration " + str(itn))
             random.shuffle(TRAIN_DATA)
             losses = {}
             for text, annotations in TRAIN_DATA:
