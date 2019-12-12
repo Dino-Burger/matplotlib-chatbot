@@ -1,3 +1,13 @@
+"""
+This model listens to audio and runs it through both, 
+the google online api as well as the mozilla offline model.
+For the mozilla model you need deepspeech as well as 
+the 1.2 GB file from 
+https://github.com/mozilla/DeepSpeech/releases/download/v0.6.0/deepspeech-0.6.0-models.tar.gz
+In my tests, google was better
+"""
+
+
 from deepspeech import Model
 import numpy as np
 import speech_recognition as sr
@@ -12,6 +22,7 @@ if __name__ == '__main__':
     with sr.Microphone(sample_rate=sample_rate) as source:
         print("Say Something")
         audio = r.listen(source)
-        audio = np.frombuffer(audio.frame_data, np.int16)
+        audioInt16 = np.frombuffer(audio.frame_data, np.int16)
 
-    print(ds.stt(audio))
+    print('mozilla', ds.stt(audioInt16))
+    print('google', r.recognize_google(audio))
