@@ -18,6 +18,17 @@ cd matplotlib-chatbot-X.X.X
 pip install -r requirements.txt
 ```
 
+## Remark regarding audio input
+There are two packages in the requirements.txt file that are only needed to use the *experimental* audio support:
+- PyAudio
+- SpeechRecognition
+
+The chatbot works without them. Remarks: 
+- PyAudio might need some additional system libraries. 
+- PyAudio works on my Ubuntu only with system python3, in Anaconda it seems to be broken.
+
+If you managed to install these, you can press enter in the chatbot and as soon as the chatbot says "Say something!" you can do so.
+
 ## Run in jupyter
 ```python
 cd matplotlib-chatbot
@@ -41,5 +52,11 @@ cb.run()
 python chatbot_run.py
 ```
 
-## Load data in chatbot
-You can load a pandas dataframe from within the chatbot. For this to work, you need csv files in a subdirectory called `data`. Note that this is a very experimental feature and the chatbot will crash if there are any non-numeric columns in a file (like strings or dates).
+## Things to do when the bot started
+
+First you need to get some data. You can either use variables that are loaded, e.g. df, and just say `plot df`. Alternatively you can load data from a csv or a csv.zip file. For this to work, you need csv files in a subdirectory called `data`. Then you can first type something like `list all files` to get an enumerated list of files. Then you can load a file by typing `load 1` to load the first file.
+
+Note that the support for pandas dataframes is experimental and that **the chatbot will crash if there are any non-numeric columns in a dataframe** (like strings or dates), coming either from a variable or a file .
+
+After loading the data you can add a legend, or change the style, or make it an xkcd plot. You can for example say `list styles` to get a list of styles and then `set style as fast` to set the style 'fast'. 
+
