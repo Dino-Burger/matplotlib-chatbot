@@ -182,6 +182,7 @@ def style_parser(state_in, user_input, local_vars):
             print("sorry, I could not find this style", style_candidate)
         else:
             state_in['plotting_style'] = sa
+            print("Applying new style", sa)
     exec(plotting_code['plot'], globals(), state_in)
     return state_in
 
