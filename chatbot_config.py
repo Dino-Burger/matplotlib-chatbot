@@ -86,7 +86,8 @@ def plot_parser(state_in, user_input, local_vars):
 def list_csv_parser(state_in, user_input, local_vars):
     try:
         state_in['csv_list'] = [ file for file in os.listdir("./data/") 
-                                                if file.endswith(".csv")][:5]
+                                                if file.endswith(".csv")
+                                                or file.endswith(".csv.zip")][:5]
         print("we found the following files for you:")
         for ind, csv in enumerate(state_in['csv_list']):
             print(ind+1, ":", csv) # we start counting at 1.
