@@ -13,7 +13,9 @@ sentences = [
     "plot column $columnname from variable $variable",
     "show me all csv files",
     "load the $ordinal",
+    "load $ordinal",
     "load the $ordinal file",
+    "load $ordinal file",
     "add a legend",
     "add a legend to the $position",
     "set style as $style", 
@@ -27,7 +29,7 @@ variable_train_values = {
     '$columnname': ['a', 'b'],
     '$variable': ['df', 'dg', ],
     '$ordinal': ['first', 'second', 'third', 'fourth', 'fifth', 
-                    '1.', '2.', '3.', '4.', '5.' ],
+                    '1', '2', '3', '4', '5' ],
         # does spacy provide something for numbers already?
     '$position': [ 'upper left', 'upper right', 'bottom left', 'bottom right', ],
     '$style': ['dark_background', 'grayscale', 'seaborn-ticks', 'seaborn dark palette'],
