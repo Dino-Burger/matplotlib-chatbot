@@ -51,6 +51,10 @@ cb.run()
 ```bash
 python chatbot_run.py
 ```
+This starts the bot with the default matplolib backend of your system, which should be fine in most cases. I had some trouble with `GTK3Agg`, so if necessary, you can provide a specific backend:
+```bash
+python chatbot_run.py --backend TkAgg
+```
 
 ## Things to do when the bot started
 
@@ -60,3 +64,14 @@ Note that the support for pandas dataframes is experimental and that **the chatb
 
 After loading the data you can add a legend, or change the style, or make it an xkcd plot. You can for example say `list styles` to get a list of styles and then `set style as fast` to set the style 'fast'. 
 
+An example conversation would be as follows:
+- what data
+- plot y
+- list all files
+- load 1
+- list my variables
+- remove y
+- turn on xkcd
+- add a legend to the left
+- xkcd off
+- exit
