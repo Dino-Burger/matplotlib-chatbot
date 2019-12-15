@@ -13,6 +13,7 @@
         font-family: 'Yanone Kaffeesatz';
         font-weight: normal;
       }
+      .remark-slide-content { font-size: x-large;}
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
     </style>
   </head>
@@ -27,55 +28,82 @@ Dino Burger
 
 ---
 
-# Introduction
-- About me
-- How the project came about
+# Why a chatbot for matplotlib?
 
-# Agenda
-- Goals
-- Demo
-- Technology
-- Outlook
+- What is a chatbot?
+- Why a chatbot?
+- Why a chatbot for matplotlib?
 
-# Goals
-- Learn how chatbots work
-- Separate code from config
-- Have some fun!
+---
+# Why a chatbot?
+## Evolution of user interfaces
+| Past      |   | Present |
+|:----------|---|:---|
+| Expert    | ⟶ | Accessible |
+| few users | ⟶ | many users |
+
+## So far
+Console  ⟶  GUI  ⟶  Touch 
+
+## Next step
+Natural language, i.e. a chatbot
+
+---
+
+# Why is this great?
+- Functionality of modern software is overwhelming.
+- Instead of googeling for features,
+- speak to the software and 
+- discover functionality iteratively via language.
+
+---
+# Why a chatbot for matplotlib?
+- Very complex software.
+- Very widely used.
+- Could be used by an even *wider* audience 
+- in a more *approachable* way. 
+
+---
+
+# A simple use case for matplotlib
+
+- Check what data is around.
+- Load some data.
+- Make a line plot of the data.
+- Change the style of the plot.
 
 ---
 
 # Demo
-![:img Terminal, 100%](screenshot_terminal_no_header.png)
-
----
-
-# Technology – the graph
 ```python
-# load_csv
-{   "start_states": ["*"],
-    "end_state": "load_csv",
-    "patterns": ["load", "load the file"] },
-
-{   "intent": "load_csv",
-    "response": "", 
-    "code_command": load_csv_parser, 
-    "context_set": ["has_plotted"],
-    "context_require" : ["csv_listed"],},
+/usr/bin/python3 chatbot_run.py --backend TkAgg
 ```
-![:img State diagram, 100%](state_diagram.jpg)
+![:img Terminal, 100%](screenshot_terminal_plot.png)
 
 ---
 
-# Technology – the journey of an input
+# How it works – the journey of an input
 ![:img User input flowchart, 60%](user_input_flowchart.jpg)
 
 ---
 
+# What we learned
+- Natural language is a valuable relatively new way to interact with software.
+- We will see more of this in the near future.
+
+---
+
 # Outlook
-- Currently all built from ground up. Compare to frameworks like rasa.
+- Currently all built from ground up. Compare to frameworks like rasa, or other chatbot frameworks.
 - Experiments with a growing graph: How well will it scale?
-- Make the language less 'me' specific.
-- Move speech engine to [mozilla DeepSpeech](https://github.com/mozilla/DeepSpeech).
+- Make a recommender system component.
+
+---
+
+# Outlook – Recommender system
+
+![:img Two Variables, 100%](overview_plot_one_var.png)
+![:img Two Variables, 100%](overview_plot_two_vars.png)
 
 ---
 class: center, middle
