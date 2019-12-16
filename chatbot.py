@@ -50,7 +50,7 @@ class Chatbot:
 
     @staticmethod
     def print_subtle(*text, **kwargs):
-        print(Fore.GREEN, *text , Style.RESET_ALL, **kwargs)
+        print(Fore.BLUE, *text , Style.RESET_ALL, **kwargs)
 
     def get_possible_next_pattern_vectors(self, curr_state, curr_contexts):
         # returns [(pat_vec, pat, end_state)]
